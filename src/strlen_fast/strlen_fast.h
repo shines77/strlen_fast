@@ -18,14 +18,15 @@
 #  include <sys/types.h>
 #endif
 
-#define strlen_fast     strlen_fast_v1
+#define strlen_fast     strlen_fast_v1_sse2
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-size_t __fastcall strlen_fast_v1(const char * str);
-size_t __fastcall strlen_fast_v2(const char * str);
+size_t __fastcall strlen_fast_v1_sse2(const char * str);
+size_t __fastcall strlen_fast_v2_sse2(const char * str);
+size_t __fastcall strlen_fast_v1_sse2_x64(const char * str);
 size_t __fastcall strlen_fast_asm(const char * str);
 
 #ifdef __cplusplus
