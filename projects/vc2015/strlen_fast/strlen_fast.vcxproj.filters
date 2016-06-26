@@ -14,5 +14,13 @@
     <ClCompile Include="..\..\..\src\strlen_fast\benchmark.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\strlen_fast\strlen_fast.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\strlen_fast\strlen_fast.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
