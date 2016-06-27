@@ -90,7 +90,6 @@ size_t __fastcall strlen_fast_v2_sse2(const char * str)
     __m128i zero16, src16, src16_low, src16_high;
     register size_t zero_mask, zero_mask_low, zero_mask_high;
     unsigned long zero_index;
-    register unsigned char isNonzero;
     register const char * cur = str;
     // Set the zero masks (16 bytes).
     zero16 = _mm_xor_si128(zero16, zero16);
@@ -116,18 +115,20 @@ size_t __fastcall strlen_fast_v2_sse2(const char * str)
         // Remove last missalign bits.
         zero_mask >>= (unsigned char)misalignment;
         zero_mask <<= (unsigned char)misalignment;
+
+        if (zero_mask != 0) {
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-        // Get the index of the first bit on set to 1.
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-        isNonzero = _BitScanForward64((unsigned long *)&zero_index, zero_mask);
+            // Get the index of the first bit on set to 1.
+            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
 #else
-        isNonzero = _BitScanForward((unsigned long *)&zero_index, zero_mask);
+            // Get the index of the first bit on set to 1.
+            _BitScanForward((unsigned long *)&zero_index, zero_mask);
 #endif // _WIN64
 #endif // _MSC_VER
-
-        if (isNonzero)
             goto strlen_exit;
+        }
 
         // Align address to 32 bytes for main loop.
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x1F));
@@ -150,18 +151,19 @@ size_t __fastcall strlen_fast_v2_sse2(const char * str)
         zero_mask >>= (unsigned char)misalignment;
         zero_mask <<= (unsigned char)misalignment;
 
+        if (zero_mask != 0) {
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-        // Get the index of the first bit on set to 1.
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-        isNonzero = _BitScanForward64((unsigned long *)&zero_index, zero_mask);
+            // Get the index of the first bit on set to 1.
+            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
 #else
-        isNonzero = _BitScanForward((unsigned long *)&zero_index, zero_mask);
+            // Get the index of the first bit on set to 1.
+            _BitScanForward((unsigned long *)&zero_index, zero_mask);
 #endif // _WIN64
 #endif // _MSC_VER
-
-        if (isNonzero)
             goto strlen_exit;
+        }
     }
 
 main_loop:
@@ -185,11 +187,12 @@ main_loop:
         // inside this scaned strings (per 32 bytes).
         if (zero_mask != 0) {
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-            // Get the index of the first bit on set to 1.
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+            // Get the index of the first bit on set to 1.
             _BitScanForward64((unsigned long *)&zero_index, zero_mask);
 #else
+            // Get the index of the first bit on set to 1.
             _BitScanForward((unsigned long *)&zero_index, zero_mask);
 #endif
 #endif
