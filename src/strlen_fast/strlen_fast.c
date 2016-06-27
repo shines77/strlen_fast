@@ -181,7 +181,8 @@ main_loop:
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
-        // If it have any one bit is 1, mean have a null terminator inside this scaned strings (per 32 bytes).
+        // If it have any one bit is 1, mean have a null terminator
+        // inside this scaned strings (per 32 bytes).
         if (zero_mask != 0) {
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
             // Get the index of the first bit on set to 1.
