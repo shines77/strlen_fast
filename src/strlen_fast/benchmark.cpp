@@ -61,13 +61,13 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
 
         sw.start();
         for (int i = 0; i < iterations; ++i) {
-            len = ::strlen_fast_v1_sse2(str);
+            len = strlen_fast_v1_sse2(str);
             sum += len;
         }
         sw.stop();
 
         printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_sse2(str)", ::strlen_fast_v1_sse2(str), sw.getMillisec(), sum);
+            "strlen_fast_v1_sse2(str)", strlen_fast_v1_sse2(str), sw.getMillisec(), sum);
     }
 
     {
@@ -79,13 +79,13 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
 
         sw.start();
         for (int i = 0; i < iterations; ++i) {
-            len = ::strlen_fast_v2_sse2(str);
+            len = strlen_fast_v2_sse2(str);
             sum += len;
         }
         sw.stop();
 
         printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v2_sse2(str)", ::strlen_fast_v2_sse2(str), sw.getMillisec(), sum);
+            "strlen_fast_v2_sse2(str)", strlen_fast_v2_sse2(str), sw.getMillisec(), sum);
     }
 
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
@@ -99,13 +99,13 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
 
         sw.start();
         for (int i = 0; i < iterations; ++i) {
-            len = ::strlen_fast_v1_sse2_x64(str);
+            len = strlen_fast_v1_sse2_x64(str);
             sum += len;
         }
         sw.stop();
 
         printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_sse2_x64(str)", ::strlen_fast_v1_sse2_x64(str), sw.getMillisec(), sum);
+            "strlen_fast_v1_sse2_x64(str)", strlen_fast_v1_sse2_x64(str), sw.getMillisec(), sum);
     }
 #endif // _X64
 
@@ -178,6 +178,8 @@ int main(int argn, char * argv[])
 
     strlen_benchmark();
 
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
     ::system("pause");
+#endif
     return 0;
 }

@@ -14,8 +14,8 @@ using namespace std::chrono;
 
 class StopWatch {
 public:
-    typedef std::chrono::time_point<high_resolution_clock> time_clock;
-    typedef std::chrono::duration<double> time_elapsed;
+    typedef std::chrono::time_point<high_resolution_clock>  time_clock;
+    typedef std::chrono::duration<double>                   time_elapsed;
 
 private:
     time_clock start_time_;
@@ -24,7 +24,7 @@ private:
 	double total_elapsed_time_;
 
 public:
-    StopWatch() : total_elapsed_time_(0.0), interval_time_{0} {};
+    StopWatch() : interval_time_{0}, total_elapsed_time_(0.0) {};
     ~StopWatch() {};
 
 	void reset() {
