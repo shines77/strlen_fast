@@ -1,6 +1,4 @@
 
-#define __SSE2__
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,6 +44,8 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
         sw.start();
         for (int i = 0; i < iterations; ++i) {
             len = ::strlen(str);
+            if (i < str_len - 1)
+                str++;
             sum += len;
         }
         sw.stop();
@@ -116,6 +116,8 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
 
 void strlen_benchmark_random_length(int str_len, int iterations)
 {
+    (void)iterations;
+
     if (str_len <= 0) {
         printf("Type: test_random_length, Error: str_len <= 0, str_len = %d\n\n", str_len);
         return;
