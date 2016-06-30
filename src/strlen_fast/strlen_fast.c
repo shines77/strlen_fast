@@ -11,6 +11,8 @@
  _BitScanForward (VC) = __builtin_clz (gcc) = bsf (asm)
  _BitScanReverse (VC) = __builtin_ctz (gcc) = bsr (asm)
 
+  On ARM it would be the CLZ (count leading zeroes) instruction.
+
  See: https://msdn.microsoft.com/en-us/library/wfd9z0bb.aspx
  See: https://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
 
