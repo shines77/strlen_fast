@@ -362,5 +362,6 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
 
 size_t __FASTCALL strlen_fast_asm(const char * str)
 {
+    (void)str;
     return 0;
 }

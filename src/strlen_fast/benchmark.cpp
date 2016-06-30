@@ -1,4 +1,6 @@
 
+#define __SSE2__
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -165,8 +167,12 @@ void strlen_benchmark()
     }
 }
 
-int main(int argn, char * argv[])
+int main(int argc, char * argv[])
 {
+    (void)argc;
+    (void)argv;
+
+#if 0
     char str[] = "abcdefggfdagafdgfadgdfgfdf";
     size_t len_v1 = strlen_fast_v1_sse2(str);
     size_t len_v2 = strlen_fast_v2_sse2(str);
@@ -175,6 +181,7 @@ int main(int argn, char * argv[])
         "strlen = %" PRIuPTR ", strlen_fast_v1 = %" PRIuPTR ", strlen_fast_v2 = %" PRIuPTR ".\n",
         str, (uintptr_t)&str[0], ::strlen(str), len_v1, len_v2);
     printf("\n");
+#endif
 
     strlen_benchmark();
 
