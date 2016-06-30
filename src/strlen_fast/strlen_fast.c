@@ -6,6 +6,43 @@
 #include <string.h>
 #include <inttypes.h>
 
+/**************************************************************************************
+
+ _BitScanForward (VC) = __builtin_clz (gcc) = bsf (asm)
+ _BitScanReverse (VC) = __builtin_ctz (gcc) = bsr (asm)
+
+ See: https://msdn.microsoft.com/en-us/library/wfd9z0bb.aspx
+ See: https://msdn.microsoft.com/en-us/library/fbxyd7zd.aspx
+
+ See: http://www.cnblogs.com/gleam/p/5025867.html
+
+ ¡ª int __builtin_clz (unsigned int x);
+    int __builtin_clzll (unsigned long long x);
+
+    Returns the number of leading 0-bits in x, starting at the most significant bit position.
+    If x is 0, the result is undefined. 
+
+ ¡ª int __builtin_ctz (unsigned int x);
+    int __builtin_ctzll (unsigned long long x);
+
+    Returns the number of trailing 0-bits in x, starting at the least significant bit position.
+    If x is 0, the result is undefined. 
+
+ See: https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+
+ ¡ª int __builtin_ffs (int x);
+    int __builtin_ffsll (long long x);
+
+    Returns one plus the index of the least significant 1-bit of x, or if x is zero, returns zero. 
+
+ int __builtin_ffs(int x) {
+     if (x == 0)
+         return 0;
+     return __builtin_clz((unsigned int)x) + 1;
+ }    
+
+***************************************************************************************/
+
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 #include <intrin.h>     // For _BitScanForward, _BitScanForward64
 #pragma intrinsic(_BitScanForward)
@@ -15,7 +52,66 @@
 #endif // _WIN64
 #endif // _MSC_VER
 #include <xmmintrin.h>  // For MMX, SSE instructions
-#include <emmintrin.h>  // For SSE2 instructions
+#include <emmintrin.h>  // For SSE2 instructions, __SSE2__ | -msse2
+
+//
+// See: http://www.cnblogs.com/zyl910/archive/2012/08/27/intrin_table_gcc.html
+//
+//#include <avxintrin.h>    // __AVX__  | -mavx     AVX:  Advanced Vector Extensions
+//#include <avx2intrin.h>   // __AVX2__ | -mavx2    AVX2: Advanced Vector Extensions 2
+
+// Get the index of the first bit on set to 1.
+#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
+// _MSC_VER
+#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+    #define __BitScanForward32(bit_index, bit_mask) \
+            _BitScanForward((unsigned long *)&(bit_index), (unsigned long)(bit_mask))
+
+    #define __BitScanForward64(bit_index, bit_mask) \
+            _BitScanForward64((unsigned long *)&(bit_index), (unsigned long long)(bit_mask))
+
+    #define __BitScanForward(bit_index, bit_mask) \
+            __BitScanForward64(bit_index, bit_mask)
+#else
+    #define __BitScanForward32(bit_index, bit_mask) \
+            _BitScanForward((unsigned long *)&(bit_index), (unsigned long)(bit_mask))
+
+    #define __BitScanForward64(bit_index, bit_mask) ((void)0)
+
+    #define __BitScanForward(bit_index, bit_mask) \
+            __BitScanForward32(bit_index, bit_mask)
+#endif // _WIN64
+
+#elif defined(__GNUC__) || defined(__clang__)
+// __GNUC__
+#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+    #define __BitScanForward32(bit_index, bit_mask) \
+            bit_index = __builtin_clz((unsigned int)bit_mask)
+
+    #define __BitScanForward64(bit_index, bit_mask) \
+            bit_index = __builtin_clzll((unsigned long long)bit_mask)
+
+    #define __BitScanForward(bit_index, bit_mask) \
+            __BitScanForward64(bit_index, bit_mask)
+#else
+    #define __BitScanForward32(bit_index, bit_mask) \
+            bit_index = __builtin_clz((unsigned int)bit_mask)
+
+    #define __BitScanForward64(bit_index, bit_mask) ((void)0)
+
+    #define __BitScanForward(bit_index, bit_mask) \
+            __BitScanForward32(bit_index, bit_mask)
+#endif // __x86_64__
+
+#else
+    // Not support
+    #define __BitScanForward32(bit_index, bit_mask)
+    #define __BitScanForward64(bit_index, bit_mask)
+    #define __BitScanForward(bit_index, bit_mask)
+    #error "The compiler does not support BitScanForward()."
+#endif // BitScanForward()
 
 size_t __fastcall strlen_fast_v1_sse2(const char * str)
 {
@@ -58,15 +154,8 @@ size_t __fastcall strlen_fast_v1_sse2(const char * str)
         // If it have any one bit is 1, mean have a null terminator
         // inside this scaned strings (per 32 bytes).
         if (zero_mask != 0) {
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
             // Get the index of the first bit on set to 1.
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
-#else
-            _BitScanForward((unsigned long *)&zero_index, zero_mask);
-#endif // _WIN64
-#endif // _MSC_VER
+            __BitScanForward(zero_index, zero_mask);
             break;
         }
         // One loop scan 32 bytes.
@@ -117,16 +206,8 @@ size_t __fastcall strlen_fast_v2_sse2(const char * str)
         zero_mask <<= (unsigned char)misalignment;
 
         if (zero_mask != 0) {
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
             // Get the index of the first bit on set to 1.
-            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
-#else
-            // Get the index of the first bit on set to 1.
-            _BitScanForward((unsigned long *)&zero_index, zero_mask);
-#endif // _WIN64
-#endif // _MSC_VER
+            __BitScanForward(zero_index, zero_mask);
             goto strlen_exit;
         }
 
@@ -152,16 +233,8 @@ size_t __fastcall strlen_fast_v2_sse2(const char * str)
         zero_mask <<= (unsigned char)misalignment;
 
         if (zero_mask != 0) {
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
             // Get the index of the first bit on set to 1.
-            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
-#else
-            // Get the index of the first bit on set to 1.
-            _BitScanForward((unsigned long *)&zero_index, zero_mask);
-#endif // _WIN64
-#endif // _MSC_VER
+            __BitScanForward(zero_index, zero_mask);
             goto strlen_exit;
         }
     }
@@ -186,16 +259,8 @@ main_loop:
         // If it have any one bit is 1, mean have a null terminator
         // inside this scaned strings (per 32 bytes).
         if (zero_mask != 0) {
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
             // Get the index of the first bit on set to 1.
-            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
-#else
-            // Get the index of the first bit on set to 1.
-            _BitScanForward((unsigned long *)&zero_index, zero_mask);
-#endif
-#endif
+            __BitScanForward(zero_index, zero_mask);
             break;
         }
     } while (1);
@@ -250,10 +315,8 @@ size_t __fastcall strlen_fast_v1_sse2_x64(const char * str)
         // If it have any one bit is 1, mean have a null terminator
         // inside this scaned strings (per 64 bytes).
         if (zero_mask != 0) {
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
             // Get the index of the first bit on set to 1.
-            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
-#endif // _MSC_VER
+            __BitScanForward64(zero_index, zero_mask);
             break;
         }
         // One loop scan 32 bytes.
@@ -274,10 +337,8 @@ size_t __fastcall strlen_fast_v1_sse2_x64(const char * str)
         // If it have any one bit is 1, mean have a null terminator
         // inside this scaned strings (per 64 bytes).
         if (zero_mask != 0) {
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
             // Get the index of the first bit on set to 1.
-            _BitScanForward64((unsigned long *)&zero_index, zero_mask);
-#endif // _MSC_VER
+            __BitScanForward64(zero_index, zero_mask);
             break;
         }
         // One loop scan 32 bytes.
