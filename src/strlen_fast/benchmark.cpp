@@ -23,13 +23,14 @@ void generate_random_string(char * str, size_t str_len)
     *dest = '\0';
 }
 
-void generate_random_string_array(char * str, size_t length, size_t str_len)
+void generate_random_string_array(char * str, size_t length, size_t str_len, size_t alloc_size)
 {
     unsigned char * dest = (unsigned char *)str;
+    memset(dest, 'a', alloc_size);
     for (size_t i = 0; i < length; ++i) {
         unsigned char * cur = (unsigned char *)dest;
-        for (size_t j = 0; j < str_len; ++j)
-            *cur++ = (unsigned char)(rand() % 255) + 1;
+        //for (size_t j = 0; j < str_len; ++j)
+        //    *cur++ = (unsigned char)(rand() % 255) + 1;
         size_t len = rand() % str_len;
         *(dest + len) = '\0';
         dest += str_len;
@@ -49,7 +50,8 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        size_t sum = 0, len;
+        volatile size_t sum = 0;
+        size_t len;
         int dir = -1;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
@@ -72,7 +74,8 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        size_t sum = 0, len;
+        volatile size_t sum = 0;
+        size_t len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
         generate_random_string(str, str_len - 1);
@@ -90,7 +93,8 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        size_t sum = 0, len;
+        volatile size_t sum = 0;
+        size_t len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
         generate_random_string(str, str_len - 1);
@@ -110,7 +114,8 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     {
         stop_watch sw;
-        size_t sum = 0, len;
+        volatile size_t sum = 0;
+        size_t len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
         generate_random_string(str, str_len - 1);
@@ -139,7 +144,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         return;
     }
 
-    uint32_t test_length = iterations / 2;
+    uint32_t test_length = iterations;
 
     printf("Type: test_random_length, iterations = %u, str_len = %u byte(s)\n\n",
         test_length, str_len);
@@ -147,12 +152,12 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
     size_t alloc_size = str_len * test_length;
     alloc_size = (alloc_size + 64 + 63) & ((size_t)~((size_t)63UL));
     std::unique_ptr<char> _str(new char[alloc_size]);
-    generate_random_string_array(_str.get(), test_length, str_len);
+    generate_random_string_array(_str.get(), test_length, str_len, alloc_size);
 
     {
         stop_watch sw;
-        size_t sum = 0, len;
-        int dir = -1;
+        volatile size_t sum = 0;
+        size_t len;
         char * str = _str.get();
 
         sw.start();
@@ -170,7 +175,8 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        size_t sum = 0, len;
+        volatile size_t sum = 0;
+        size_t len;
         char * str = _str.get();
 
         sw.start();
@@ -188,7 +194,8 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        size_t sum = 0, len;
+        volatile size_t sum = 0;
+        size_t len;
         char * str = _str.get();
 
         sw.start();
@@ -208,7 +215,8 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     {
         stop_watch sw;
-        size_t sum = 0, len;
+        volatile size_t sum = 0;
+        size_t len;
         char * str = _str.get();
 
         sw.start();
@@ -261,7 +269,7 @@ void strlen_benchmark()
         length <<= 1;
     }
 
-    static const int s_max_iterations_2[] = { 65536, 65536, 32768, 16364, 8192,
+    static const int s_max_iterations_2[] = { 65536 * 2, 65536, 32768, 16364, 8192,
                                               4096, 2048, 1024, 512, 256, 128, 0 };
     length = (1 << 4);
     for (int i = 0; i < 10; ++i) {

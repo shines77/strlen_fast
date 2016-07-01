@@ -9,6 +9,7 @@
 #pragma comment(lib, "winmm.lib")
 #endif // _WIN32
 #include <chrono>
+#include <mutex>
 
 #ifndef COMPILER_BARRIER
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
@@ -30,6 +31,7 @@ private:
     std::chrono::time_point<high_resolution_clock> stop_time_;
     std::chrono::duration<double> interval_time_;
 	double total_elapsed_time_;
+    std::mutex  mutex_;
 
 public:
     StopWatch() : interval_time_{0}, total_elapsed_time_(0.0) {};
@@ -44,15 +46,18 @@ public:
     void start() {
         start_time_ = std::chrono::high_resolution_clock::now();
 		COMPILER_BARRIER();
+        mutex_.lock();
     }
 
     void stop() {
 		COMPILER_BARRIER();
+        mutex_.unlock();
         stop_time_ = std::chrono::high_resolution_clock::now();
     }
 
 	void again() {
 		double elapsed_time = getElapsedTime();
+        COMPILER_BARRIER();
 		total_elapsed_time_ += elapsed_time;
 	}
     
@@ -87,6 +92,7 @@ private:
     size_t stop_time_;
     double interval_time_;
 	double total_elapsed_time_;
+    std::mutex  mutex_;
 
 public:
     StopWatch_v2() : start_time_(0), stop_time_(0), interval_time_(0.0), total_elapsed_time_(0.0) {};
@@ -101,15 +107,18 @@ public:
     void start() {
         start_time_ = timeGetTime();
 		COMPILER_BARRIER();
+        mutex_.lock();
     }
 
     void stop() {
 		COMPILER_BARRIER();
+        mutex_.unlock();
         stop_time_ = timeGetTime();
     }
 
 	void again() {
 		double elapsed_time = getElapsedTime();
+        COMPILER_BARRIER();
 		total_elapsed_time_ += elapsed_time;
 	}
     
@@ -139,7 +148,7 @@ public:
 #endif // _WIN32
 
 #if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
-typedef StopWatch_v2 stop_watch;
+typedef StopWatch stop_watch;
 #else
 typedef StopWatch stop_watch;
 #endif // _WIN32
