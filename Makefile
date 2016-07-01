@@ -12,9 +12,7 @@ OBJS =
 
 all: bin/strlen_fast
 
-bin/strlen_fast: src/strlen_fast/strlen_fast.o
-	$(CC) $(CFLAGS) -o $@ $^
-	src/strlen_fast/benchmark.o
+bin/strlen_fast: src/strlen_fast/benchmark.o src/strlen_fast/strlen_fast.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 # src/strlen_fast.o: $(OBJS)
