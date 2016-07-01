@@ -52,6 +52,7 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
         }
         sw.stop();
 
+        str = _str.get();
         printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
             "::strlen(str)", ::strlen(str), sw.getMillisec(), sum);
     }
