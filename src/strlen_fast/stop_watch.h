@@ -18,9 +18,9 @@ public:
     typedef std::chrono::duration<double>                   time_elapsed;
 
 private:
-    time_clock start_time_;
-    time_clock stop_time_;
-    time_elapsed interval_time_;
+    std::chrono::time_point<high_resolution_clock> start_time_;
+    std::chrono::time_point<high_resolution_clock> stop_time_;
+    std::chrono::duration<double> interval_time_;
 	double total_elapsed_time_;
 
 public:
@@ -49,7 +49,8 @@ public:
 	}
     
     double getElapsedTime() {
-        interval_time_ = std::chrono::duration_cast< time_elapsed >(stop_time_ - start_time_);
+        COMPILER_BARRIER();
+        interval_time_ = std::chrono::duration_cast< std::chrono::duration<double> >(stop_time_ - start_time_);
         return interval_time_.count();
     }
 
@@ -66,6 +67,7 @@ public:
     }
 
     double getTotalSecond() const {
+        COMPILER_BARRIER();
         return total_elapsed_time_;
     }
 };
