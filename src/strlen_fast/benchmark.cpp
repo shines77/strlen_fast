@@ -37,6 +37,7 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
     {
         StopWatch sw;
         size_t sum = 0, len;
+        int dir = -1;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
         generate_random_string(str, str_len - 1);
@@ -44,8 +45,9 @@ void strlen_benchmark_fixed_string(int str_len, int iterations)
         sw.start();
         for (int i = 0; i < iterations; ++i) {
             len = ::strlen(str);
-            if (i < str_len - 1)
-                str++;
+            if ((len == 0 && dir == -1) || (len == (str_len - 1) && dir == 1))
+                dir = -dir;
+            str += dir;
             sum += len;
         }
         sw.stop();
