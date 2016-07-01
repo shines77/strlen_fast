@@ -1,5 +1,13 @@
 #pragma once
 
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif // WIN32_LEAN_AND_MEAN
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
+#endif // _WIN32
 #include <chrono>
 
 #ifndef COMPILER_BARRIER
@@ -71,5 +79,71 @@ public:
         return total_elapsed_time_;
     }
 };
+
+class StopWatch_v2 {
+public:
+    typedef std::chrono::time_point<high_resolution_clock>  time_clock;
+    typedef std::chrono::duration<double>                   time_elapsed;
+
+private:
+    size_t start_time_;
+    size_t stop_time_;
+    double interval_time_;
+	double total_elapsed_time_;
+
+public:
+    StopWatch_v2() : start_time_(0), stop_time_(0), interval_time_(0.0), total_elapsed_time_(0.0) {};
+    ~StopWatch_v2() {};
+
+	void reset() {
+		total_elapsed_time_ = 0.0;
+        start_time_ = timeGetTime();
+        interval_time_ = 0.0;
+	}
+
+    void start() {
+        start_time_ = timeGetTime();;
+		COMPILER_BARRIER();
+    }
+
+    void stop() {
+		COMPILER_BARRIER();
+        stop_time_ = timeGetTime();;
+    }
+
+	void again() {
+		double elapsed_time = getElapsedTime();
+		total_elapsed_time_ += elapsed_time;
+	}
+    
+    double getElapsedTime() {
+        COMPILER_BARRIER();
+        interval_time_ = (double)(stop_time_ - start_time_) / 1000.0;
+        return interval_time_;
+    }
+
+    double getMillisec() {
+        return getElapsedTime() * 1000.0;
+    }
+
+    double getSecond() {
+        return getElapsedTime();
+    }
+
+    double getTotalMillisec() const {
+        return getTotalSecond() * 1000.0;
+    }
+
+    double getTotalSecond() const {
+        COMPILER_BARRIER();
+        return total_elapsed_time_;
+    }
+};
+
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
+typedef StopWatch_v2 stop_watch;
+#else
+typedef StopWatch stop_watch;
+#endif
 
 #undef COMPILER_BARRIRER

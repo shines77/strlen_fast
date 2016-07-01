@@ -48,7 +48,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         iterations, str_len);
 
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         int dir = -1;
         std::unique_ptr<char> _str(new char[str_len]);
@@ -71,7 +71,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
     }
 
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
@@ -89,7 +89,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
     }
 
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
@@ -109,7 +109,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
@@ -139,17 +139,18 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         return;
     }
 
-    printf("Type: test_random_length, iterations = %u, str_len = %u byte(s)\n\n",
-        iterations, str_len);
+    uint32_t test_length = iterations / 2;
 
-    uint32_t test_length = iterations;
+    printf("Type: test_random_length, iterations = %u, str_len = %u byte(s)\n\n",
+        test_length, str_len);
+
     size_t alloc_size = str_len * test_length;
     alloc_size = (alloc_size + 64 + 63) & ((size_t)~((size_t)63UL));
     std::unique_ptr<char> _str(new char[alloc_size]);
     generate_random_string_array(_str.get(), test_length, str_len);
 
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         int dir = -1;
         char * str = _str.get();
@@ -168,7 +169,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
     }
 
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         char * str = _str.get();
 
@@ -186,7 +187,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
     }
 
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         char * str = _str.get();
 
@@ -206,7 +207,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     {
-        StopWatch sw;
+        stop_watch sw;
         size_t sum = 0, len;
         char * str = _str.get();
 
