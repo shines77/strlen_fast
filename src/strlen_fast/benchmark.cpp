@@ -31,7 +31,7 @@ void generate_random_string_array(char * str, size_t length, size_t str_len, siz
     unsigned char * dest = (unsigned char *)str;
     memset(dest, 'a', alloc_size);
     for (size_t i = 0; i < length; ++i) {
-        unsigned char * cur = (unsigned char *)dest;
+        //unsigned char * cur = (unsigned char *)dest;
         //for (size_t j = 0; j < str_len; ++j)
         //    *cur++ = (unsigned char)(rand() % 255) + 1;
         size_t base = str_len / 2;
