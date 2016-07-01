@@ -8,8 +8,8 @@
 
 /**************************************************************************************
 
- _BitScanForward (VC) = __builtin_clz (gcc) = bsf (asm)
- _BitScanReverse (VC) = __builtin_ctz (gcc) = bsr (asm)
+ _BitScanForward (VC) = __builtin_ctz (gcc) = bsf (asm)
+ _BitScanReverse (VC) = __builtin_clz (gcc) = bsr (asm)
 
   On ARM it would be the CLZ (count leading zeroes) instruction.
 
@@ -18,17 +18,17 @@
 
  See: http://www.cnblogs.com/gleam/p/5025867.html
 
- ¡ª int __builtin_clz (unsigned int x);
-    int __builtin_clzll (unsigned long long x);
-
-    Returns the number of leading 0-bits in x, starting at the most significant bit position.
-    If x is 0, the result is undefined. 
-
  ¡ª int __builtin_ctz (unsigned int x);
     int __builtin_ctzll (unsigned long long x);
 
     Returns the number of trailing 0-bits in x, starting at the least significant bit position.
-    If x is 0, the result is undefined. 
+    If x is 0, the result is undefined.   (MSB)
+
+ ¡ª int __builtin_clz (unsigned int x);
+    int __builtin_clzll (unsigned long long x);
+
+    Returns the number of leading 0-bits in x, starting at the most significant bit position.
+    If x is 0, the result is undefined.   (LSB)
 
  See: https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
 
@@ -90,16 +90,16 @@
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     #define __BitScanForward32(bit_index, bit_mask) \
-            bit_index = __builtin_clz((unsigned int)bit_mask)
+            bit_index = __builtin_ctz((unsigned int)bit_mask)
 
     #define __BitScanForward64(bit_index, bit_mask) \
-            bit_index = __builtin_clzll((unsigned long long)bit_mask)
+            bit_index = __builtin_ctzll((unsigned long long)bit_mask)
 
     #define __BitScanForward(bit_index, bit_mask) \
             __BitScanForward64(bit_index, bit_mask)
 #else
     #define __BitScanForward32(bit_index, bit_mask) \
-            bit_index = __builtin_clz((unsigned int)bit_mask)
+            bit_index = __builtin_ctz((unsigned int)bit_mask)
 
     #define __BitScanForward64(bit_index, bit_mask) ((void)0)
 
@@ -148,8 +148,8 @@ size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -226,8 +226,8 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
         // Remove last misalignment bits.
@@ -253,8 +253,8 @@ main_loop:
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -309,8 +309,8 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -331,8 +331,8 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
