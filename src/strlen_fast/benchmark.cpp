@@ -5,6 +5,9 @@
 #include <inttypes.h>
 #include <memory>
 
+#include <type_traits>
+#include <iostream>
+
 #include "strlen_fast.h"
 #include "stop_watch.h"
 
@@ -291,7 +294,7 @@ void strlen_benchmark()
     printf("--------------------------------------------------------------------------------------\n\n");
 }
 
-int main(int argc, char * argv[])
+int main2(int argc, char * argv[])
 {
     (void)argc;
     (void)argv;
