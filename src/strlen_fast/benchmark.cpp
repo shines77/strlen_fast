@@ -31,7 +31,8 @@ void generate_random_string_array(char * str, size_t length, size_t str_len, siz
         unsigned char * cur = (unsigned char *)dest;
         //for (size_t j = 0; j < str_len; ++j)
         //    *cur++ = (unsigned char)(rand() % 255) + 1;
-        size_t len = rand() % str_len;
+        size_t base = str_len / 2;
+        size_t len = base + rand() % (str_len - base);
         *(dest + len) = '\0';
         dest += str_len;
     }
@@ -50,9 +51,10 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         int dir = -1;
+        (void)dir;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
         generate_random_string(str, str_len - 1);
@@ -60,9 +62,11 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
             len = ::strlen(str);
+#if 0
             if ((len == 0 && dir == -1) || (len == (str_len - 1) && dir == 1))
                 dir = -dir;
             str += dir;
+#endif
             sum += len;
         }
         sw.stop();
@@ -74,7 +78,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
@@ -93,7 +97,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
@@ -114,7 +118,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
@@ -156,7 +160,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         char * str = _str.get();
 
@@ -175,7 +179,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         char * str = _str.get();
 
@@ -194,7 +198,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         char * str = _str.get();
 
@@ -215,7 +219,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     {
         stop_watch sw;
-        volatile size_t sum = 0;
+        size_t sum = 0;
         size_t len;
         char * str = _str.get();
 
@@ -255,6 +259,8 @@ void strlen_benchmark()
 {
     uint32_t length, iterations;
 
+    printf("--------------------------------------------------------------------------------------\n\n");
+
     static const int s_max_iterations_0[] = { 96000, 80000, 72000, 64000, 56000,
                                               48000, 40000, 36000, 32000, 28000,
                                               24000, 20000, 16000, 12000, 10000,
@@ -269,6 +275,8 @@ void strlen_benchmark()
         length <<= 1;
     }
 
+    printf("--------------------------------------------------------------------------------------\n\n");
+
     static const int s_max_iterations_2[] = { 65536 * 2, 65536, 32768, 16364, 8192,
                                               4096, 2048, 1024, 512, 256, 128, 0 };
     length = (1 << 4);
@@ -279,6 +287,8 @@ void strlen_benchmark()
         strlen_benchmark_impl(test_random_length, length, iterations);
         length <<= 2;
     }
+
+    printf("--------------------------------------------------------------------------------------\n\n");
 }
 
 int main(int argc, char * argv[])

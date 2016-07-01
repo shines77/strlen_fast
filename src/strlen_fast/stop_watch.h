@@ -46,12 +46,12 @@ public:
     void start() {
         start_time_ = std::chrono::high_resolution_clock::now();
 		COMPILER_BARRIER();
-        mutex_.lock();
+        //mutex_.lock();
     }
 
     void stop() {
 		COMPILER_BARRIER();
-        mutex_.unlock();
+        //mutex_.unlock();
         stop_time_ = std::chrono::high_resolution_clock::now();
     }
 
@@ -107,12 +107,12 @@ public:
     void start() {
         start_time_ = timeGetTime();
 		COMPILER_BARRIER();
-        mutex_.lock();
+        //mutex_.lock();
     }
 
     void stop() {
 		COMPILER_BARRIER();
-        mutex_.unlock();
+        //mutex_.unlock();
         stop_time_ = timeGetTime();
     }
 
