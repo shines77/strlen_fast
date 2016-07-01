@@ -1,6 +1,6 @@
 CC = gcc
 CXX = g++
-CFLAGS += -std=c99 -O3 -Wall -Wextra -pedantic -msse2 -DNDEBUG-D__SSE2__
+CFLAGS += -std=c99 -O3 -Wall -Wextra -pedantic -msse2 -DNDEBUG -D__SSE2__
 CXXFLAGS += -std=c++11 -O3 -Wall -Wextra -pedantic -msse2 -DNDEBUG -D__SSE2__
 
 # Set OBJCOPY if not defined by environment:
