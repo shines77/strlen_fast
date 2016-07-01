@@ -148,8 +148,8 @@ size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -226,8 +226,8 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
         // Remove last misalignment bits.
@@ -253,8 +253,8 @@ main_loop:
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -309,8 +309,8 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -331,8 +331,8 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
         src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high) & 0xFFFFUL;
-        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low)  & 0xFFFFUL;
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
+        zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
