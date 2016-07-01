@@ -80,11 +80,8 @@ public:
     }
 };
 
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
 class StopWatch_v2 {
-public:
-    typedef std::chrono::time_point<high_resolution_clock>  time_clock;
-    typedef std::chrono::duration<double>                   time_elapsed;
-
 private:
     size_t start_time_;
     size_t stop_time_;
@@ -102,13 +99,13 @@ public:
 	}
 
     void start() {
-        start_time_ = timeGetTime();;
+        start_time_ = timeGetTime();
 		COMPILER_BARRIER();
     }
 
     void stop() {
 		COMPILER_BARRIER();
-        stop_time_ = timeGetTime();;
+        stop_time_ = timeGetTime();
     }
 
 	void again() {
@@ -139,11 +136,12 @@ public:
         return total_elapsed_time_;
     }
 };
+#endif // _WIN32
 
 #if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
 typedef StopWatch_v2 stop_watch;
 #else
 typedef StopWatch stop_watch;
-#endif
+#endif // _WIN32
 
 #undef COMPILER_BARRIRER
