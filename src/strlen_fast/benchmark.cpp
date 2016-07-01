@@ -144,7 +144,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
     (void)iterations;
 
     if (str_len <= 0) {
-        printf("Type: test_random_length, Error: str_len <= 0, str_len = %u\n\n", str_len);
+        printf("Type: test_random_length, Error: str_len <= 0, max_str_len = %u\n\n", str_len);
         return;
     }
 

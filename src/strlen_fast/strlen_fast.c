@@ -85,7 +85,8 @@
             __BitScanForward32(bit_index, bit_mask)
 #endif // _WIN64
 
-#elif defined(__GNUC__) || defined(__clang__)
+#elif (defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)))) \
+   || defined(__clang__)
 // __GNUC__
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)

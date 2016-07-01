@@ -22,16 +22,11 @@
 using namespace std::chrono;
 
 class StopWatch {
-public:
-    typedef std::chrono::time_point<high_resolution_clock>  time_clock;
-    typedef std::chrono::duration<double>                   time_elapsed;
-
 private:
     std::chrono::time_point<high_resolution_clock> start_time_;
     std::chrono::time_point<high_resolution_clock> stop_time_;
     std::chrono::duration<double> interval_time_;
 	double total_elapsed_time_;
-    std::mutex  mutex_;
 
 public:
     StopWatch() : interval_time_{0}, total_elapsed_time_(0.0) {};
@@ -40,18 +35,16 @@ public:
 	void reset() {
 		total_elapsed_time_ = 0.0;
         start_time_ = std::chrono::high_resolution_clock::now();
-        interval_time_ = std::chrono::duration_cast<time_elapsed>(start_time_ - start_time_);
+        interval_time_ = std::chrono::duration_cast< std::chrono::duration<double> >(start_time_ - start_time_);
 	}
 
     void start() {
         start_time_ = std::chrono::high_resolution_clock::now();
 		COMPILER_BARRIER();
-        //mutex_.lock();
     }
 
     void stop() {
 		COMPILER_BARRIER();
-        //mutex_.unlock();
         stop_time_ = std::chrono::high_resolution_clock::now();
     }
 
@@ -92,7 +85,6 @@ private:
     size_t stop_time_;
     double interval_time_;
 	double total_elapsed_time_;
-    std::mutex  mutex_;
 
 public:
     StopWatch_v2() : start_time_(0), stop_time_(0), interval_time_(0.0), total_elapsed_time_(0.0) {};
@@ -107,12 +99,10 @@ public:
     void start() {
         start_time_ = timeGetTime();
 		COMPILER_BARRIER();
-        //mutex_.lock();
     }
 
     void stop() {
 		COMPILER_BARRIER();
-        //mutex_.unlock();
         stop_time_ = timeGetTime();
     }
 
