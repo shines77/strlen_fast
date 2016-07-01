@@ -294,7 +294,7 @@ void strlen_benchmark()
     printf("--------------------------------------------------------------------------------------\n\n");
 }
 
-int main2(int argc, char * argv[])
+int main(int argc, char * argv[])
 {
     (void)argc;
     (void)argv;

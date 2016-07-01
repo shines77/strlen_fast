@@ -25,5 +25,8 @@
     <ClInclude Include="..\..\..\src\strlen_fast\stop_watch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\strlen_fast\bitscan_forward.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
