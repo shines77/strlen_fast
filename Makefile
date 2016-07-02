@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
-CFLAGS += -std=c99 -Wall -Wextra -pedantic -msse2 -mavx -D__SSE2__ -D__AVX__
-CXXFLAGS += -std=c++11 -Wall -Wextra -pedantic -msse2 -mavx -D__SSE2__ -D__AVX__
+CFLAGS += -std=c99 -Wall -Wextra -pedantic -msse2 -mavx -mavx2 -D__SSE2__ -D__AVX__ -D__AVX2__
+CXXFLAGS += -std=c++11 -Wall -Wextra -pedantic -msse2 -mavx -mavx2 -D__SSE2__ -D__AVX__ -D__AVX2__
 
 # Set OBJCOPY if not defined by environment:
 OBJCOPY ?= objcopy
