@@ -1,18 +1,45 @@
 CC = gcc
 CXX = g++
-CFLAGS += -std=c99 -O3 -Wall -Wextra -pedantic -msse2 -DNDEBUG -D__SSE2__
-CXXFLAGS += -std=c++11 -O3 -Wall -Wextra -pedantic -msse2 -DNDEBUG -D__SSE2__
+CFLAGS += -std=c99 -Wall -Wextra -pedantic -msse2 -D__SSE2__
+CXXFLAGS += -std=c++11 -Wall -Wextra -pedantic -msse2 -D__SSE2__
 
 # Set OBJCOPY if not defined by environment:
 OBJCOPY ?= objcopy
 
-OBJS =
+# Build mode: 0 is debug mode, 1 is release mode. Example: make RELEASE=1
+RELEASE = 1
+ARCH = 64
+OBJS = src/strlen_fast/strlen_fast.o src/strlen_fast/strlen_fast_avx.o src/strlen_fast/benchmark.o
+TARGETS = bin/strlen_fast
+
+ifeq ($(RELEASE), 0)
+    # Debug mode
+    CFLAGS += -g
+    CXXFLAGS += -g
+else
+    # Release mode
+    CFLAGS += -O3 -DNDEBUG
+    CXXFLAGS += -O3 -DNDEBUG
+endif
+
+ifeq ($(ARCH), 32)
+    # x86 arch
+    CFLAGS += -m32
+    CXXFLAGS += -m32
+else
+    ifeq ($(ARCH), 64)
+        # x64 arch
+        CFLAGS += -m64
+	CXXFLAGS += -m64
+    else
+    endif
+endif
 
 .PHONY: all analyze clean
 
-all: bin/strlen_fast
+all: $(TARGETS)
 
-bin/strlen_fast: src/strlen_fast/benchmark.o src/strlen_fast/strlen_fast.o
+bin/strlen_fast: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 # src/strlen_fast.o: $(OBJS)
@@ -29,4 +56,4 @@ analyze: clean
 	scan-build --use-analyzer=`which clang` --status-bugs make
 
 clean:
-	rm -f bin/strlen_fast src/strlen_fast/strlen_fast.o src/strlen_fast/benchmark.o $(OBJS)
+	rm -f $(OBJS) $(TARGETS) $(addsuffix .exe, $(TARGETS))

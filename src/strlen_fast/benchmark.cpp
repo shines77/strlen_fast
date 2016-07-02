@@ -1,6 +1,8 @@
 
 #ifdef __cplusplus
 #define __STDC_LIMIT_MACROS
+#define __STDC_CONSTANT_MACROS
+#define __STDC_FORMAT_MACROS
 #endif
 
 #include <stdlib.h>
@@ -143,6 +145,44 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
     }
 #endif // _X64
 
+    {
+        stop_watch sw;
+        size_t sum = 0;
+        size_t len;
+        std::unique_ptr<char> _str(new char[str_len]);
+        char * str = _str.get();
+        generate_random_string(str, str_len - 1);
+
+        sw.start();
+        for (uint32_t i = 0; i < iterations; ++i) {
+            len = strlen_fast_v1_avx(str);
+            sum += len;
+        }
+        sw.stop();
+
+        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_fast_v1_avx(str)", strlen_fast_v1_avx(str), sw.getMillisec(), sum);
+    }
+
+    {
+        stop_watch sw;
+        size_t sum = 0;
+        size_t len;
+        std::unique_ptr<char> _str(new char[str_len]);
+        char * str = _str.get();
+        generate_random_string(str, str_len - 1);
+
+        sw.start();
+        for (uint32_t i = 0; i < iterations; ++i) {
+            len = strlen_fast_v2_avx(str);
+            sum += len;
+        }
+        sw.stop();
+
+        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_fast_v2_avx(str)", strlen_fast_v2_avx(str), sw.getMillisec(), sum);
+    }
+
     printf("\n");
 }
 
@@ -243,6 +283,44 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
             "strlen_fast_v1_sse2_x64(str)", strlen_fast_v1_sse2_x64(str), sw.getMillisec(), sum);
     }
 #endif // _X64
+
+    {
+        stop_watch sw;
+        size_t sum = 0;
+        size_t len;
+        char * str = _str.get();
+
+        sw.start();
+        for (uint32_t i = 0; i < test_length; ++i) {
+            len = strlen_fast_v1_avx(str);
+            sum += len;
+            str += str_len;
+        }
+        sw.stop();
+
+        str = _str.get();
+        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_fast_v1_avx(str)", strlen_fast_v1_avx(str), sw.getMillisec(), sum);
+    }
+
+    {
+        stop_watch sw;
+        size_t sum = 0;
+        size_t len;
+        char * str = _str.get();
+
+        sw.start();
+        for (uint32_t i = 0; i < test_length; ++i) {
+            len = strlen_fast_v2_avx(str);
+            sum += len;
+            str += str_len;
+        }
+        sw.stop();
+
+        str = _str.get();
+        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_fast_v2_avx(str)", strlen_fast_v2_avx(str), sw.getMillisec(), sum);
+    }
 
     printf("\n");
 }
