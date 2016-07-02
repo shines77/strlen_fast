@@ -59,12 +59,6 @@ size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
 
     len = cur - str;
     len += zero_index;
-#if !defined(NDEBUG)
-    if (len != strlen(str)) {
-        printf("len = %" PRIuPTR ", zero_index = %u, missalign = %" PRIuPTR ".\n",
-            len, zero_index, misalignment);
-    }
-#endif
     return len;
 }
 
@@ -242,12 +236,6 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
 
     len = cur - str;
     len += zero_index;
-#if !defined(NDEBUG)
-    if (len != strlen(str)) {
-        printf("len = %" PRIuPTR ", zero_index = %u, missalign = %" PRIuPTR ".\n",
-            len, zero_index, misalignment);
-    }
-#endif
     return len;
 }
 
