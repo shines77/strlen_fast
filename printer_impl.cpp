@@ -2,7 +2,7 @@
 #include <type_traits>
 #include <iostream>
 
-template <class Type>
+template <typename Type>
 struct is_string : std::integral_constant<bool, false> {};
 
 template <>
@@ -13,6 +13,7 @@ struct printer_impl
 {
     template <typename U>
     void print(U value) {
+        (void)value;	
         std::cout << "Error" << std::endl;
     }
 };
@@ -35,9 +36,9 @@ struct printer_impl<true, false>
     }
 };
 
-template <class Type,
-          bool isIntegral = std::is_integral<typename Type>::value,
-          bool isString = is_string<typename Type>::value>
+template <typename Type,
+          bool isIntegral = std::is_integral<Type>::value,
+          bool isString = is_string<Type>::value>
 void print(Type _value)
 {
     printer_impl<isIntegral, isString> printer;
