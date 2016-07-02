@@ -8,7 +8,7 @@
 
 #include "bitscan_forward.h"
 
-size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
+size_t __FASTCALL strlen_fast_v1_avx(const char * str)
 {
     size_t len;
     __m128i zero16, src16_low, src16_high;
@@ -62,7 +62,7 @@ size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
     return len;
 }
 
-size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
+size_t __FASTCALL strlen_fast_v2_avx(const char * str)
 {
     size_t len;
     __m128i zero16, src16, src16_low, src16_high;
@@ -163,7 +163,7 @@ strlen_exit:
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
 
-size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
+size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str)
 {
     size_t len;
     __m128i zero16, src16_low, src16_high;
@@ -241,7 +241,7 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
 
 #endif // _X64
 
-size_t __FASTCALL strlen_fast_asm(const char * str)
+size_t __FASTCALL strlen_fast_asm_avx(const char * str)
 {
     (void)str;
     return 0;

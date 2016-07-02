@@ -53,7 +53,8 @@
 #pragma intrinsic(_BitScanReverse64)
 #endif // _WIN64
 #endif // _MSC_VER
-#include <xmmintrin.h>  // For MMX, SSE instructions
+
+//#include <xmmintrin.h>  // For MMX, SSE instructions
 #include <emmintrin.h>  // For SSE2 instructions, __SSE2__ | -msse2
 
 //
@@ -61,6 +62,7 @@
 //
 //#include <avxintrin.h>    // __AVX__  | -mavx     AVX:  Advanced Vector Extensions
 //#include <avx2intrin.h>   // __AVX2__ | -mavx2    AVX2: Advanced Vector Extensions 2
+//
 
 // Get the index of the first bit on set to 1.
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)

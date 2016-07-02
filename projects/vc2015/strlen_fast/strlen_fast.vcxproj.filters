@@ -9,12 +9,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="src\msvc">
+      <UniqueIdentifier>{8c11a9b3-9c78-49f0-8443-f1027c152fbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\strlen_fast\benchmark.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\strlen_fast\strlen_fast.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\strlen_fast\strlen_fast_avx.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,6 +32,15 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\strlen_fast\bitscan_forward.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strlen_fast\msvc\inttypes.h">
+      <Filter>src\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strlen_fast\msvc\stdint.h">
+      <Filter>src\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\strlen_fast\x86_intrin.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

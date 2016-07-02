@@ -18,6 +18,8 @@
 #  include <sys/types.h>
 #endif
 
+#include "x86_intrin.h"
+
 #ifndef __FASTCALL
 #define __FASTCALL  __fastcall
 #endif
@@ -32,7 +34,7 @@
 
 #endif  // __x86_64__
 
-#define strlen_fast     strlen_fast_v1_sse2
+#define strlen_fast     strlen_fast_v2_sse2
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +44,11 @@ size_t __FASTCALL strlen_fast_v1_sse2(const char * str);
 size_t __FASTCALL strlen_fast_v2_sse2(const char * str);
 size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str);
 size_t __FASTCALL strlen_fast_asm(const char * str);
+
+size_t __FASTCALL strlen_fast_v1_avx(const char * str);
+size_t __FASTCALL strlen_fast_v2_avx(const char * str);
+size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str);
+size_t __FASTCALL strlen_fast_asm_avx(const char * str);
 
 #ifdef __cplusplus
 }

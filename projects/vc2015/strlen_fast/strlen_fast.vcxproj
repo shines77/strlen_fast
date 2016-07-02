@@ -160,9 +160,18 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\strlen_fast\benchmark.cpp" />
     <ClCompile Include="..\..\..\src\strlen_fast\strlen_fast.c" />
+    <ClCompile Include="..\..\..\src\strlen_fast\strlen_fast_avx.c">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/arch:AVX -D__AVX__ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/arch:AVX -D__AVX__ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/arch:AVX -D__AVX__ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/arch:AVX -D__AVX__ %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\strlen_fast\bitscan_forward.h" />
+    <ClInclude Include="..\..\..\src\strlen_fast\x86_intrin.h" />
+    <ClInclude Include="..\..\..\src\strlen_fast\msvc\inttypes.h" />
+    <ClInclude Include="..\..\..\src\strlen_fast\msvc\stdint.h" />
     <ClInclude Include="..\..\..\src\strlen_fast\stop_watch.h" />
     <ClInclude Include="..\..\..\src\strlen_fast\strlen_fast.h" />
   </ItemGroup>

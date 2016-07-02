@@ -1,4 +1,8 @@
 
+#ifdef __cplusplus
+#define __STDC_LIMIT_MACROS
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

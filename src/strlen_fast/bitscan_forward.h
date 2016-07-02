@@ -48,12 +48,13 @@
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 #include <intrin.h>     // For _BitScanForward, _BitScanForward64
 #pragma intrinsic(_BitScanForward)
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
 #pragma intrinsic(_BitScanForward64)
 #endif // _WIN64
 #endif // _MSC_VER
-#include <xmmintrin.h>  // For MMX, SSE instructions
+
+//#include <xmmintrin.h>  // For MMX, SSE instructions
 #include <emmintrin.h>  // For SSE2 instructions, __SSE2__ | -msse2
 
 //
@@ -61,11 +62,12 @@
 //
 //#include <avxintrin.h>    // __AVX__  | -mavx     AVX:  Advanced Vector Extensions
 //#include <avx2intrin.h>   // __AVX2__ | -mavx2    AVX2: Advanced Vector Extensions 2
+//
 
 // Get the index of the first bit on set to 1.
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 // _MSC_VER
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     #define __BitScanForward32(bit_index, bit_mask) \
             _BitScanForward((unsigned long *)&(bit_index), (unsigned long)(bit_mask))
@@ -88,7 +90,7 @@
 #elif (defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)))) \
    || defined(__clang__)
 // __GNUC__
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     #define __BitScanForward32(bit_index, bit_mask) \
             bit_index = __builtin_ctz((unsigned int)bit_mask)
