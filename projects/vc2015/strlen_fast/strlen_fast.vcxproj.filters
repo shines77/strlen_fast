@@ -43,5 +43,8 @@
     <ClInclude Include="..\..\..\src\strlen_fast\x86_intrin.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\strlen_fast\bitscan_reverse.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

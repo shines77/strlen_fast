@@ -12,13 +12,13 @@
  See: http://www.cnblogs.com/gleam/p/5025867.html
 
  ¡ª int __builtin_ctz (unsigned int x);
-    int __builtin_ctzll (unsigned long long x);
+   int __builtin_ctzll (unsigned long long x);
 
     Returns the number of trailing 0-bits in x, starting at the least significant bit position.
     If x is 0, the result is undefined.   (MSB)
 
  ¡ª int __builtin_clz (unsigned int x);
-    int __builtin_clzll (unsigned long long x);
+   int __builtin_clzll (unsigned long long x);
 
     Returns the number of leading 0-bits in x, starting at the most significant bit position.
     If x is 0, the result is undefined.   (LSB)
@@ -26,7 +26,7 @@
  See: https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
 
  ¡ª int __builtin_ffs (int x);
-    int __builtin_ffsll (long long x);
+   int __builtin_ffsll (long long x);
 
     Returns one plus the index of the least significant 1-bit of x, or if x is zero, returns zero. 
 
@@ -48,7 +48,7 @@
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 #include <intrin.h>     // For _BitScanReverse, _BitScanReverse64
 #pragma intrinsic(_BitScanReverse)
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
 #pragma intrinsic(_BitScanReverse64)
 #endif // _WIN64
@@ -67,7 +67,7 @@
 // Get the index of the first bit on set to 1.
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 // _MSC_VER
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     #define __BitScanReverse32(bit_index, bit_mask) \
             _BitScanReverse((unsigned long *)&(bit_index), (unsigned long)(bit_mask))
@@ -90,7 +90,7 @@
 #elif (defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)))) \
    || defined(__clang__)
 // __GNUC__
-#if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
     #define __BitScanReverse32(bit_index, bit_mask) \
             bit_index = __builtin_clz((unsigned int)bit_mask)
