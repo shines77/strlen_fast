@@ -71,7 +71,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
             len = ::strlen(str);
-#if 0
+#if defined(__GUNC__)
             if ((len == 0 && dir == -1) || (len == (str_len - 1) && dir == 1))
                 dir = -dir;
             str += dir;
