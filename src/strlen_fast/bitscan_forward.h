@@ -81,7 +81,8 @@
     #define __BitScanForward32(bit_index, bit_mask) \
             _BitScanForward((unsigned long *)&(bit_index), (unsigned long)(bit_mask))
 
-    #define __BitScanForward64(bit_index, bit_mask) ((void)0)
+    #define __BitScanForward64(bit_index, bit_mask) \
+            __BitScanForward32(bit_index, bit_mask)
 
     #define __BitScanForward(bit_index, bit_mask) \
             __BitScanForward32(bit_index, bit_mask)
@@ -104,7 +105,8 @@
     #define __BitScanForward32(bit_index, bit_mask) \
             bit_index = __builtin_ctz((unsigned int)bit_mask)
 
-    #define __BitScanForward64(bit_index, bit_mask) ((void)0)
+    #define __BitScanForward64(bit_index, bit_mask) \
+            __BitScanForward32(bit_index, bit_mask)
 
     #define __BitScanForward(bit_index, bit_mask) \
             __BitScanForward32(bit_index, bit_mask)

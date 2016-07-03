@@ -58,16 +58,17 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
     printf("Type: test_fixed_string, iterations = %u, str_len = %u byte(s)\n\n",
         iterations, str_len);
 
+    std::unique_ptr<char> _str(new char[str_len]);
+    char * str2 = _str.get();
+    generate_random_string(str2, str_len - 1);
+
     {
         stop_watch sw;
         size_t sum = 0;
         size_t len;
         int dir = -1;
         (void)dir;
-        std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
-        generate_random_string(str, str_len - 1);
-
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
             len = ::strlen(str);
@@ -89,9 +90,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         stop_watch sw;
         size_t sum = 0;
         size_t len;
-        std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
-        generate_random_string(str, str_len - 1);
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
@@ -108,9 +107,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         stop_watch sw;
         size_t sum = 0;
         size_t len;
-        std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
-        generate_random_string(str, str_len - 1);
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
@@ -129,9 +126,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         stop_watch sw;
         size_t sum = 0;
         size_t len;
-        std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
-        generate_random_string(str, str_len - 1);
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
@@ -149,28 +144,41 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         stop_watch sw;
         size_t sum = 0;
         size_t len;
-        std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
-        generate_random_string(str, str_len - 1);
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
-            len = strlen_fast_v1_avx(str);
+            len = strlen_fast_v1a_avx(str);
             sum += len;
         }
         sw.stop();
 
         printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_avx(str)", strlen_fast_v1_avx(str), sw.getMillisec(), sum);
+            "strlen_fast_v1a_avx(str)", strlen_fast_v1a_avx(str), sw.getMillisec(), sum);
     }
 
     {
         stop_watch sw;
         size_t sum = 0;
         size_t len;
-        std::unique_ptr<char> _str(new char[str_len]);
         char * str = _str.get();
-        generate_random_string(str, str_len - 1);
+
+        sw.start();
+        for (uint32_t i = 0; i < iterations; ++i) {
+            len = strlen_fast_v1b_avx(str);
+            sum += len;
+        }
+        sw.stop();
+
+        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_fast_v1b_avx(str)", strlen_fast_v1b_avx(str), sw.getMillisec(), sum);
+    }
+
+    {
+        stop_watch sw;
+        size_t sum = 0;
+        size_t len;
+        char * str = _str.get();
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
@@ -292,7 +300,7 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < test_length; ++i) {
-            len = strlen_fast_v1_avx(str);
+            len = strlen_fast_v1a_avx(str);
             sum += len;
             str += str_len;
         }
@@ -300,7 +308,26 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         str = _str.get();
         printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_avx(str)", strlen_fast_v1_avx(str), sw.getMillisec(), sum);
+            "strlen_fast_v1a_avx(str)", strlen_fast_v1a_avx(str), sw.getMillisec(), sum);
+    }
+
+    {
+        stop_watch sw;
+        size_t sum = 0;
+        size_t len;
+        char * str = _str.get();
+
+        sw.start();
+        for (uint32_t i = 0; i < test_length; ++i) {
+            len = strlen_fast_v1b_avx(str);
+            sum += len;
+            str += str_len;
+        }
+        sw.stop();
+
+        str = _str.get();
+        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_fast_v1b_avx(str)", strlen_fast_v1b_avx(str), sw.getMillisec(), sum);
     }
 
     {

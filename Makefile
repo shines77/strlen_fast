@@ -9,7 +9,11 @@ OBJCOPY ?= objcopy
 # Build mode: 0 is debug mode, 1 is release mode. Example: make RELEASE=1
 RELEASE = 1
 ARCH = 64
-OBJS = src/strlen_fast/strlen_fast.o src/strlen_fast/strlen_fast_avx.o src/strlen_fast/benchmark.o
+OBJS = src/strlen_fast/strlen_fast.o \
+src/strlen_fast/strlen_fast_avx.o \
+src/strlen_fast/strlen_fast_avx2.o \
+src/strlen_fast/benchmark.o
+
 TARGETS = bin/strlen_fast
 
 ifeq ($(RELEASE), 0)

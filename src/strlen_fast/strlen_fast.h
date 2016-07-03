@@ -55,10 +55,16 @@ size_t __FASTCALL strlen_fast_asm(const char * str);
 
 #if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__) || 1
-size_t __FASTCALL strlen_fast_v1_avx(const char * str);
+size_t __FASTCALL strlen_fast_v1a_avx(const char * str);
+size_t __FASTCALL strlen_fast_v1b_avx(const char * str);
 size_t __FASTCALL strlen_fast_v2_avx(const char * str);
 size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str);
 size_t __FASTCALL strlen_fast_asm_avx(const char * str);
+
+size_t __FASTCALL strlen_fast_v1_avx2(const char * str);
+size_t __FASTCALL strlen_fast_v2_avx2(const char * str);
+size_t __FASTCALL strlen_fast_v1_avx2_x64(const char * str);
+size_t __FASTCALL strlen_fast_asm_avx2(const char * str);
 #endif // _M_X64 || __x86_64__
 
 #ifdef __cplusplus
