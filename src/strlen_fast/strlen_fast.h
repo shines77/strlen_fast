@@ -69,9 +69,14 @@ size_t __FASTCALL strlen_fast_v1_avx2_x64(const char * str);
 size_t __FASTCALL strlen_fast_asm_avx2(const char * str);
 #endif // _M_X64 || __x86_64__
 
+#if defined(__GNUC__)
+static const __m128i __simd_zero16 = { 0, 0 };
+static const __m256i __simd_zero32 = { 0, 0, 0, 0 };
+#else
 static const __m128i __simd_zero16 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 static const __m256i __simd_zero32 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#endif
 
 #if defined(NDEBUG)
 #define INIT_ZERO_16(xmm)   (void)(xmm)

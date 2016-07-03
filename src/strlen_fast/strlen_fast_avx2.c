@@ -9,8 +9,10 @@
 #include "x86_intrin.h"
 #include "bitscan_forward.h"
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4700)
+#endif
 
 size_t __FASTCALL strlen_fast_v1_avx2(const char * str)
 {
@@ -35,6 +37,7 @@ size_t __FASTCALL strlen_fast_v1_avx2(const char * str)
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x3F)) + 64;
     }
     // Set the zero masks (32 bytes).
+    INIT_ZERO_32(zero32);
     zero32 = _mm256_xor_si256(zero32, zero32);
 
     // Main loop
@@ -94,6 +97,7 @@ size_t __FASTCALL strlen_fast_v2_avx2(const char * str)
     unsigned long zero_index;
     register const char * cur = str;
     // Set the zero masks (32 bytes).
+    INIT_ZERO_32(zero32);
     zero32 = _mm256_xor_si256(zero32, zero32);
     // Get the misalignment bytes last 6 bits.
     size_t misalignment = (size_t)cur & 0x3F;
@@ -252,6 +256,7 @@ size_t __FASTCALL strlen_fast_v1_avx2_x64(const char * str)
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x3F)) + 64;
     }
     // Set the zero masks (32 bytes).
+    INIT_ZERO_32(zero32);
     zero32 = _mm256_xor_si256(zero32, zero32);
 
     // Main loop
@@ -351,4 +356,6 @@ size_t __FASTCALL strlen_fast_asm_avx2(const char * str)
     return 0;
 }
 
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif

@@ -10,8 +10,10 @@
 #include "x86_intrin.h"
 #include "bitscan_forward.h"
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4700)
+#endif
 
 size_t __FASTCALL strlen_fast_v1a_avx(const char * str)
 {
@@ -439,4 +441,6 @@ size_t __FASTCALL strlen_fast_asm_avx(const char * str)
     return 0;
 }
 
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
