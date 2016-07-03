@@ -9,11 +9,14 @@
 #include "x86_intrin.h"
 #include "bitscan_forward.h"
 
+#pragma warning(push)
+#pragma warning(disable: 4700)
+
 size_t __FASTCALL strlen_fast_v1_avx2(const char * str)
 {
     size_t len;
-    __m256i zero32, src32_low, src32_high;
-    register uint32_t zero_mask_low, zero_mask_high;
+    register __m256i zero32, src32_low, src32_high;
+    register size_t zero_mask_low, zero_mask_high;
     register uint64_t zero_mask;
     unsigned long zero_index;
     register const char * cur = str;
@@ -85,7 +88,7 @@ size_t __FASTCALL strlen_fast_v1_avx2(const char * str)
 size_t __FASTCALL strlen_fast_v2_avx2(const char * str)
 {
     size_t len;
-    __m256i zero32, src32, src32_low, src32_high;
+    register __m256i zero32, src32, src32_low, src32_high;
     register size_t zero_mask_low, zero_mask_high;
     register uint64_t zero_mask;
     unsigned long zero_index;
@@ -230,7 +233,7 @@ strlen_exit:
 size_t __FASTCALL strlen_fast_v1_avx2_x64(const char * str)
 {
     size_t len;
-    __m256i zero32, src32_low, src32_high;
+    register __m256i zero32, src32_low, src32_high;
     register size_t zero_mask, zero_mask_low, zero_mask_high;
     unsigned long zero_index;
     register const char * cur = str;
@@ -347,3 +350,5 @@ size_t __FASTCALL strlen_fast_asm_avx2(const char * str)
     (void)str;
     return 0;
 }
+
+#pragma warning(pop)

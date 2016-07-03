@@ -30,6 +30,7 @@ size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x1F)) + 32;
     }
     // Set the zero masks (16 bytes).
+    INIT_ZERO_16(zero16);
     zero16 = _mm_xor_si128(zero16, zero16);
 
     // Main loop
@@ -70,6 +71,7 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
     unsigned long zero_index;
     register const char * cur = str;
     // Set the zero masks (16 bytes).
+    INIT_ZERO_16(zero16);
     zero16 = _mm_xor_si128(zero16, zero16);
     // Get the misalignment bytes last 5 bits.
     size_t misalignment = (size_t)cur & 0x1F;
@@ -100,12 +102,13 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
             goto strlen_exit;
         }
 
-        // Align address to 32 bytes for main loop.
+        // Align address to 32 bytes for misalignment.
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x1F));
     }
     else {
-        // Align address to 32 bytes for main loop.
+        // Align address to 32 bytes for this loop.
         cur = (const char * )((size_t)cur & ((size_t)~(size_t)0x1F));
+
         // Load the src 16 bytes to XMM register
         src16_high = _mm_load_si128((__m128i *)(cur + 16));
         src16_low  = _mm_load_si128((__m128i *)(cur));
@@ -185,6 +188,7 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x3F)) + 64;
     }
     // Set the zero masks (16 bytes).
+    INIT_ZERO_16(zero16);
     zero16 = _mm_xor_si128(zero16, zero16);
 
     // Main loop

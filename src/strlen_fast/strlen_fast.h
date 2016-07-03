@@ -18,6 +18,8 @@
 #  include <sys/types.h>
 #endif
 
+#include "x86_intrin.h"
+
 #ifndef ATTR_ALIGN
 #  if defined(__GNUC__) || defined(__clang__)   // GCC or clang
 #    define ATTR_ALIGN(N)    __attribute__((aligned(N)))
@@ -66,6 +68,18 @@ size_t __FASTCALL strlen_fast_v2_avx2(const char * str);
 size_t __FASTCALL strlen_fast_v1_avx2_x64(const char * str);
 size_t __FASTCALL strlen_fast_asm_avx2(const char * str);
 #endif // _M_X64 || __x86_64__
+
+static const __m128i __simd_zero16 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static const __m256i __simd_zero32 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+#if defined(NDEBUG)
+#define INIT_ZERO_16(xmm)   (void)(xmm)
+#define INIT_ZERO_32(avx)   (void)(avx)
+#else
+#define INIT_ZERO_16(xmm)   (xmm) = __simd_zero16
+#define INIT_ZERO_32(avx)   (avx) = __simd_zero32
+#endif
 
 #ifdef __cplusplus
 }

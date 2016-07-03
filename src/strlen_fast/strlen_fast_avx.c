@@ -5,14 +5,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
+#include <assert.h>
 
 #include "x86_intrin.h"
 #include "bitscan_forward.h"
 
+#pragma warning(push)
+#pragma warning(disable: 4700)
+
 size_t __FASTCALL strlen_fast_v1a_avx(const char * str)
 {
     size_t len;
-    __m256i zero32, src32_low, src32_high;
+    register __m256i zero32, src32_low, src32_high;
     register size_t zero_mask_low, zero_mask_high;
     register uint64_t zero_mask;
     unsigned long zero_index;
@@ -32,6 +36,7 @@ size_t __FASTCALL strlen_fast_v1a_avx(const char * str)
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x3F)) + 64;
     }
     // Set the zero masks (32 bytes).
+    INIT_ZERO_32(zero32);
     zero32 = _mm256_xor_si256(zero32, zero32);
 
     // Main loop
@@ -85,7 +90,7 @@ size_t __FASTCALL strlen_fast_v1a_avx(const char * str)
 size_t __FASTCALL strlen_fast_v1b_avx(const char * str)
 {
     size_t len;
-    __m256i zero32, src32_low, src32_high;
+    register __m256i zero32, src32_low, src32_high;
     register size_t zero_mask_low, zero_mask_high;
     register uint64_t zero_mask;
     unsigned long zero_index;
@@ -107,10 +112,11 @@ size_t __FASTCALL strlen_fast_v1b_avx(const char * str)
         // Align address to 64 bytes for main loop.
         end = (const char *)((size_t)str & ((size_t)~(size_t)0x3F)) + 64;
 
-        __m128i zero16, src16;
-        uint32_t zero_mask16;
+        register __m128i zero16, src16;
+        register uint32_t zero_mask16;
 
         // Set the zero masks (16 bytes).
+        INIT_ZERO_16(zero16);
         zero16 = _mm_xor_si128(zero16, zero16);
 
         // Minor 16 bytes loop
@@ -134,6 +140,7 @@ size_t __FASTCALL strlen_fast_v1b_avx(const char * str)
         }
     }
     // Set the zero masks (32 bytes).
+    INIT_ZERO_32(zero32);
     zero32 = _mm256_xor_si256(zero32, zero32);
 
     // Main loop
@@ -188,19 +195,20 @@ strlen_exit:
 size_t __FASTCALL strlen_fast_v2_avx(const char * str)
 {
     size_t len;
-    __m256i zero32, src32, src32_low, src32_high;
+    register __m256i zero32, src32, src32_low, src32_high;
     register size_t zero_mask_low, zero_mask_high;
     register uint64_t zero_mask;
     unsigned long zero_index;
     register const char * cur = str;
     // Set the zero masks (32 bytes).
+    INIT_ZERO_32(zero32);
     zero32 = _mm256_xor_si256(zero32, zero32);
     // Get the misalignment bytes last 6 bits.
     size_t misalignment = (size_t)cur & 0x3F;
-    // If the misalignment bytes is < 16 bytes?
+    // If the misalignment bytes is < 32 bytes?
     if (misalignment < 0x20) {
         if (misalignment == 0) {
-            // Align address to 32 bytes for main loop.
+            // Align address to 64 bytes for main loop.
             cur = (const char *)((size_t)cur & ((size_t)~(size_t)0x3F)) - 64;
             goto main_loop;
         }
@@ -208,23 +216,11 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
         misalignment = (size_t)cur & 0x1F;
         // Align address to 16 bytes for XMM register.
         cur = (const char * )((size_t)cur & ((size_t)~(size_t)0x1F));
+
         // Load the src 32 bytes to XMM register
         src32 = _mm256_load_si256((__m256i *)(cur));
         // Compare with zero32 masks per byte.
         src32 = _mm256_cmpeq_epi8(src32, zero32);
-#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-        // Package the compare result (32 bytes) to 32 bits.
-        zero_mask = (uint64_t)_mm256_movemask_epi8(src32);
-        // Remove last missalign bits.
-        zero_mask >>= (unsigned char)misalignment;
-        zero_mask <<= (unsigned char)misalignment;
-        if (zero_mask != 0) {
-            // Get the index of the first bit on set to 1.
-            __BitScanForward64(zero_index, zero_mask);
-            goto strlen_exit;
-        }
-#else
         // Package the compare result (32 bytes) to 32 bits.
         zero_mask_low = (size_t)_mm256_movemask_epi8(src32);
         // Remove last missalign bits.
@@ -235,37 +231,20 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
             __BitScanForward32(zero_index, zero_mask_low);
             goto strlen_exit;
         }
-#endif
         // Align address to 64 bytes for main loop.
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x3F));
     }
     else {
-        // Align address to 64 bytes for main loop.
+        // Align address to 64 bytes for misalignment.
         cur = (const char * )((size_t)cur & ((size_t)~(size_t)0x3F));
+
         // Load the src 32 bytes to XMM register
         src32_high = _mm256_load_si256((__m256i *)(cur + 32));
-        src32_low  = _mm256_load_si256((__m256i *)(cur));
         // Compare with zero32 masks per byte.
         src32_high = _mm256_cmpeq_epi8(src32_high, zero32);
-        src32_low  = _mm256_cmpeq_epi8(src32_low,  zero32);
         // Package the compare result (32 bytes) to 32 bits.
         zero_mask_high = (size_t)_mm256_movemask_epi8(src32_high);
-        zero_mask_low  = (size_t)_mm256_movemask_epi8(src32_low);
-#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-        // Combin the mask of the low 32 bits and high 32 bits.
-        zero_mask = (zero_mask_high << 32) | zero_mask_low;
-        // Remove last misalignment bits.
-        zero_mask >>= (unsigned char)misalignment;
-        zero_mask <<= (unsigned char)misalignment;
-
-        if (zero_mask != 0) {
-            // Get the index of the first bit on set to 1.
-            __BitScanForward64(zero_index, zero_mask);
-            goto strlen_exit;
-        }
-#else
-        (void)zero_mask;
+        // Skip 32 bytes.
         misalignment -= 32;
         // Remove last misalignment bits.
         zero_mask_high >>= (unsigned char)misalignment;
@@ -275,11 +254,10 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
         // inside this scaned strings (per 64 bytes).
         if (zero_mask_high != 0) {
             // Get the index of the first bit on set to 1.
-            __BitScanForward32(zero_index, zero_mask_high);
+            __BitScanForward(zero_index, zero_mask_high);
             zero_index += 32;
             goto strlen_exit;
         }
-#endif // _M_X64 || __x86_64__
     }
 
 main_loop:
@@ -327,8 +305,12 @@ main_loop:
     } while (1);
 
 strlen_exit:
+    //assert(cur > str);
+    if (cur < str)
+        len = 0;
     len = cur - str;
     len += zero_index;
+    //assert((int64_t)len >= 0);
     return len;
 }
 
@@ -338,7 +320,7 @@ strlen_exit:
 size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str)
 {
     size_t len;
-    __m256i zero32, src32_low, src32_high;
+    register __m256i zero32, src32_low, src32_high;
     register size_t zero_mask, zero_mask_low, zero_mask_high;
     unsigned long zero_index;
     register const char * cur = str;
@@ -357,6 +339,7 @@ size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str)
         cur = (const char *)((size_t)str & ((size_t)~(size_t)0x3F)) + 64;
     }
     // Set the zero masks (32 bytes).
+    INIT_ZERO_32(zero32);
     zero32 = _mm256_xor_si256(zero32, zero32);
 
     // Main loop
@@ -455,3 +438,5 @@ size_t __FASTCALL strlen_fast_asm_avx(const char * str)
     (void)str;
     return 0;
 }
+
+#pragma warning(pop)
