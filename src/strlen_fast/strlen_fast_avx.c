@@ -226,8 +226,8 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
         // Package the compare result (32 bytes) to 32 bits.
         zero_mask_low = (size_t)_mm256_movemask_epi8(src32);
         // Remove last missalign bits.
-        zero_mask_low >>= (unsigned char)misalignment;
-        zero_mask_low <<= (unsigned char)misalignment;
+        zero_mask_low >>= misalignment;
+        zero_mask_low <<= misalignment;;
         if (zero_mask_low != 0) {
             // Get the index of the first bit on set to 1.
             __BitScanForward32(zero_index, zero_mask_low);
@@ -249,8 +249,8 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
         // Skip 32 bytes.
         misalignment -= 32;
         // Remove last misalignment bits.
-        zero_mask_high >>= (unsigned char)misalignment;
-        zero_mask_high <<= (unsigned char)misalignment;
+        zero_mask_high >>= misalignment;
+        zero_mask_high <<= misalignment;;
 
         // If it have any one bit is 1, mean it have a null terminator
         // inside this scaned strings (per 64 bytes).

@@ -11,7 +11,7 @@
 size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
 {
     size_t len;
-    __m128i zero16, src16_low, src16_high;
+    register __m128i zero16, src16_low, src16_high;
     register size_t zero_mask, zero_mask_low, zero_mask_high;
     unsigned long zero_index;
     register const char * cur = str;
@@ -66,7 +66,7 @@ size_t __FASTCALL strlen_fast_v1_sse2(const char * str)
 size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
 {
     size_t len;
-    __m128i zero16, src16, src16_low, src16_high;
+    register __m128i zero16, src16, src16_low, src16_high;
     register size_t zero_mask, zero_mask_low, zero_mask_high;
     unsigned long zero_index;
     register const char * cur = str;
@@ -93,8 +93,8 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
         // Package the compare result (16 bytes) to 16 bits.
         zero_mask = (size_t)_mm_movemask_epi8(src16);
         // Remove last missalign bits.
-        zero_mask >>= (unsigned char)misalignment;
-        zero_mask <<= (unsigned char)misalignment;
+        zero_mask >>= misalignment;
+        zero_mask <<= misalignment;;
 
         if (zero_mask != 0) {
             // Get the index of the first bit on set to 1.
@@ -121,8 +121,8 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
         // Remove last misalignment bits.
-        zero_mask >>= (unsigned char)misalignment;
-        zero_mask <<= (unsigned char)misalignment;
+        zero_mask >>= misalignment;
+        zero_mask <<= misalignment;;
 
         if (zero_mask != 0) {
             // Get the index of the first bit on set to 1.
@@ -169,7 +169,7 @@ strlen_exit:
 size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
 {
     size_t len;
-    __m128i zero16, src16_low, src16_high;
+    register __m128i zero16, src16_low, src16_high;
     register size_t zero_mask, zero_mask_low, zero_mask_high;
     unsigned long zero_index;
     register const char * cur = str;
