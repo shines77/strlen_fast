@@ -62,11 +62,6 @@ size_t __FASTCALL strlen_fast_v1b_avx(const char * str);
 size_t __FASTCALL strlen_fast_v2_avx(const char * str);
 size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str);
 size_t __FASTCALL strlen_fast_asm_avx(const char * str);
-
-size_t __FASTCALL strlen_fast_v1_avx2(const char * str);
-size_t __FASTCALL strlen_fast_v2_avx2(const char * str);
-size_t __FASTCALL strlen_fast_v1_avx2_x64(const char * str);
-size_t __FASTCALL strlen_fast_asm_avx2(const char * str);
 #endif // _M_X64 || __x86_64__
 
 #if defined(__GNUC__)

@@ -197,7 +197,7 @@ strlen_exit:
 size_t __FASTCALL strlen_fast_v2_avx(const char * str)
 {
     size_t len;
-    register __m256i zero32, src32, src32_low, src32_high;
+    register __m256i zero32, src32_low, src32_high;
     register size_t zero_mask_low, zero_mask_high;
     register uint64_t zero_mask;
     unsigned long zero_index;
@@ -210,34 +210,39 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
     // If the misalignment bytes is < 32 bytes?
     if (misalignment < 0x20) {
         if (misalignment == 0) {
-            // Align address to 64 bytes for main loop.
-            cur = (const char *)((size_t)cur & ((size_t)~(size_t)0x3F)) - 64;
+            // If misalignment is 0, skip this step.
             goto main_loop;
         }
-        // The misalignment bytes is less than 32 bytes.
-        misalignment = (size_t)cur & 0x1F;
-        // Align address to 16 bytes for XMM register.
-        cur = (const char * )((size_t)cur & ((size_t)~(size_t)0x1F));
-
-        // Load the src 32 bytes to XMM register
-        src32 = _mm256_load_si256((__m256i *)(cur));
+        // Align address to 64 bytes for main loop.
+        cur = (const char * )((size_t)cur & ((size_t)~(size_t)0x3F));
+        // Load 32 bytes from target string to YMM register.
+        src32_low  = _mm256_load_si256((__m256i *)(cur));
+        src32_high = _mm256_load_si256((__m256i *)(cur + 32));
         // Compare with zero32 masks per byte.
-        src32 = _mm256_cmpeq_epi8(src32, zero32);
+        src32_low  = _mm256_cmpeq_epi8(src32_low,  zero32);
+        src32_high = _mm256_cmpeq_epi8(src32_high, zero32);
         // Package the compare result (32 bytes) to 32 bits.
-        zero_mask_low = (size_t)_mm256_movemask_epi8(src32);
+        zero_mask_low  = (size_t)_mm256_movemask_epi8(src32_low);
+        zero_mask_high = (size_t)_mm256_movemask_epi8(src32_high);
         // Remove last missalign bits.
         zero_mask_low >>= misalignment;
-        zero_mask_low <<= misalignment;;
+        zero_mask_low <<= misalignment;
         if (zero_mask_low != 0) {
             // Get the index of the first bit on set to 1.
             __BitScanForward32(zero_index, zero_mask_low);
             goto strlen_exit;
         }
-        // Align address to 64 bytes for main loop.
-        cur = (const char *)((size_t)str & ((size_t)~(size_t)0x3F));
+        if (zero_mask_high != 0) {
+            // Get the index of the first bit on set to 1.
+            __BitScanForward32(zero_index, zero_mask_high);
+            zero_index += 32;
+            goto strlen_exit;
+        }
+        // Align address to the next 64 bytes for main loop.
+        cur += 64;
     }
     else {
-        // Align address to 64 bytes for misalignment.
+        // Align address to 64 bytes, and offset 32 bytes for misalignment.
         cur = (const char * )((size_t)cur & ((size_t)~(size_t)0x3F));
 
         // Load the src 32 bytes to XMM register
@@ -250,7 +255,7 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
         misalignment -= 32;
         // Remove last misalignment bits.
         zero_mask_high >>= misalignment;
-        zero_mask_high <<= misalignment;;
+        zero_mask_high <<= misalignment;
 
         // If it have any one bit is 1, mean it have a null terminator
         // inside this scaned strings (per 64 bytes).
@@ -260,22 +265,22 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
             zero_index += 32;
             goto strlen_exit;
         }
+        // Align address to the next 64 bytes for main loop.
+        cur += 64;
     }
 
 main_loop:
     // Main loop
     do {
-        // One loop scan 64 bytes.
-        cur += 64;
         // Load the src 32 bytes to XMM register
-        src32_high = _mm256_load_si256((__m256i *)(cur + 32));
         src32_low  = _mm256_load_si256((__m256i *)(cur));
+        src32_high = _mm256_load_si256((__m256i *)(cur + 32));
         // Compare with zero32 masks per byte.
-        src32_high = _mm256_cmpeq_epi8(src32_high, zero32);
         src32_low  = _mm256_cmpeq_epi8(src32_low,  zero32);
+        src32_high = _mm256_cmpeq_epi8(src32_high, zero32);
         // Package the compare result to 32 bits.
-        zero_mask_high = (size_t)_mm256_movemask_epi8(src32_high);
         zero_mask_low  = (size_t)_mm256_movemask_epi8(src32_low);
+        zero_mask_high = (size_t)_mm256_movemask_epi8(src32_high);
 #if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
         // Combin the mask of the low 32 bits and high 32 bits.
@@ -297,22 +302,20 @@ main_loop:
             __BitScanForward(zero_index, zero_mask_low);
             break;
         }
-        else if (zero_mask_high != 0) {
+        if (zero_mask_high != 0) {
             // Get the index of the first bit on set to 1.
             __BitScanForward(zero_index, zero_mask_high);
             zero_index += 32;
             break;
         }
 #endif // _M_X64 || __x86_64__
+        // One loop scan 64 bytes.
+        cur += 64;
     } while (1);
 
 strlen_exit:
-    //assert(cur > str);
-    if (cur < str)
-        len = 0;
     len = cur - str;
     len += zero_index;
-    //assert((int64_t)len >= 0);
     return len;
 }
 

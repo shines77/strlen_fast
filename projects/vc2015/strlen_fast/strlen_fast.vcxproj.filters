@@ -23,9 +23,6 @@
     <ClCompile Include="..\..\..\src\strlen_fast\strlen_fast_avx.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\strlen_fast\strlen_fast_avx2.c">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\strlen_fast\strlen_fast.h">

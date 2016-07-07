@@ -11,7 +11,6 @@ RELEASE = 1
 ARCH = 64
 OBJS = src/strlen_fast/strlen_fast.o \
 src/strlen_fast/strlen_fast_avx.o \
-src/strlen_fast/strlen_fast_avx2.o \
 src/strlen_fast/benchmark.o
 
 TARGETS = bin/strlen_fast

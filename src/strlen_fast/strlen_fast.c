@@ -94,7 +94,7 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
         zero_mask = (size_t)_mm_movemask_epi8(src16);
         // Remove last missalign bits.
         zero_mask >>= misalignment;
-        zero_mask <<= misalignment;;
+        zero_mask <<= misalignment;
 
         if (zero_mask != 0) {
             // Get the index of the first bit on set to 1.
@@ -122,7 +122,7 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
         // Remove last misalignment bits.
         zero_mask >>= misalignment;
-        zero_mask <<= misalignment;;
+        zero_mask <<= misalignment;
 
         if (zero_mask != 0) {
             // Get the index of the first bit on set to 1.
