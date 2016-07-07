@@ -232,7 +232,7 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
             __BitScanForward32(zero_index, zero_mask_low);
             goto strlen_exit;
         }
-        if (zero_mask_high != 0) {
+        else if (zero_mask_high != 0) {
             // Get the index of the first bit on set to 1.
             __BitScanForward32(zero_index, zero_mask_high);
             zero_index += 32;
@@ -302,7 +302,7 @@ main_loop:
             __BitScanForward(zero_index, zero_mask_low);
             break;
         }
-        if (zero_mask_high != 0) {
+        else if (zero_mask_high != 0) {
             // Get the index of the first bit on set to 1.
             __BitScanForward(zero_index, zero_mask_high);
             zero_index += 32;
