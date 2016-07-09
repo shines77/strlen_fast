@@ -110,14 +110,14 @@ size_t __FASTCALL strlen_fast_v2_sse2(const char * str)
         cur = (const char * )((size_t)cur & ((size_t)~(size_t)0x1F));
 
         // Load the src 16 bytes to XMM register
-        src16_high = _mm_load_si128((__m128i *)(cur + 16));
         src16_low  = _mm_load_si128((__m128i *)(cur));
+        src16_high = _mm_load_si128((__m128i *)(cur + 16));
         // Compare with zero16 masks per byte.
-        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
+        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
         // Remove last misalignment bits.
@@ -137,14 +137,14 @@ main_loop:
         // One loop scan 32 bytes.
         cur += 32;
         // Load the src 16 bytes to XMM register
-        src16_high = _mm_load_si128((__m128i *)(cur + 16));
         src16_low  = _mm_load_si128((__m128i *)(cur));
+        src16_high = _mm_load_si128((__m128i *)(cur + 16));
         // Compare with zero16 masks per byte.
-        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
+        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         // Package the compare result to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -194,14 +194,14 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
     // Main loop
     do {
         // Load the src 16 bytes to XMM register
-        src16_high = _mm_load_si128((__m128i *)(cur + 16));
         src16_low  = _mm_load_si128((__m128i *)(cur));
+        src16_high = _mm_load_si128((__m128i *)(cur + 16));
         // Compare with zero16 masks per byte.
-        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
+        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
@@ -215,15 +215,15 @@ size_t __FASTCALL strlen_fast_v1_sse2_x64(const char * str)
         // One loop scan 32 bytes.
         cur += 32;
 
-        // Load the src 16 bytes to XMM register
+        // Load the src 16 bytes to XMM register        
+        src16_low  = _mm_load_si128((__m128i *)(cur));
         src16_high = _mm_load_si128((__m128i *)(cur + 16));
-        src16_low  = _mm_load_si128((__m128i *)(cur + 0));
         // Compare with zero16 masks per byte.
-        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         src16_low  = _mm_cmpeq_epi8(src16_low,  zero16);
+        src16_high = _mm_cmpeq_epi8(src16_high, zero16);
         // Package the compare result (16 bytes) to 16 bits.
-        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         zero_mask_low  = (size_t)_mm_movemask_epi8(src16_low);
+        zero_mask_high = (size_t)_mm_movemask_epi8(src16_high);
         // Combin the mask of the low 16 bits and high 16 bits.
         zero_mask = (zero_mask_high << 16) | zero_mask_low;
 
