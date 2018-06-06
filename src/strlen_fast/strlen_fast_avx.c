@@ -229,12 +229,12 @@ size_t __FASTCALL strlen_fast_v2_avx(const char * str)
         zero_mask_low <<= misalignment;
         if (zero_mask_low != 0) {
             // Get the index of the first bit on set to 1.
-            __BitScanForward32(zero_index, zero_mask_low);
+            __BitScanForward(zero_index, zero_mask_low);
             goto strlen_exit;
         }
         else if (zero_mask_high != 0) {
             // Get the index of the first bit on set to 1.
-            __BitScanForward32(zero_index, zero_mask_high);
+            __BitScanForward(zero_index, zero_mask_high);
             zero_index += 32;
             goto strlen_exit;
         }

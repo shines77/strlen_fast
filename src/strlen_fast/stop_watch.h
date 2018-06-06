@@ -22,44 +22,43 @@
 using namespace std::chrono;
 
 namespace jimi {
+
 namespace detail {
+    template <typename T>
+    class duration_time {
+    public:
+        typedef T time_float_t;
 
-template <typename T>
-class duration_time {
-public:
-    typedef T time_float_t;
+        // 1 second = 1,000 millisec
+        const time_float_t kMillisecCoff = static_cast<time_float_t>(1000.0);
+        // 1 second = 1,000,000 microsec
+        const time_float_t kMicrosecCoff = static_cast<time_float_t>(1000000.0);
+        // 1 second = 1,000,000,000 nanosec
+        const time_float_t kNanosecCoff = static_cast<time_float_t>(1000000000.0);
 
-    // 1 second = 1,000 millisec
-    const time_float_t kMillisecCoff = static_cast<time_float_t>(1000.0);
-    // 1 second = 1,000,000 microsec
-    const time_float_t kMicrosecCoff = static_cast<time_float_t>(1000000.0);
-    // 1 second = 1,000,000,000 nanosec
-    const time_float_t kNanosecCoff = static_cast<time_float_t>(1000000.0);
+    private:
+        time_float_t duration_;
 
-private:
-    time_float_t duration_;
+    public:
+        duration_time(time_float_t duration) : duration_(duration) {}
+        ~duration_time() {}
 
-public:
-    duration_time(time_float_t duration) : duration_(duration) {}
-    ~duration_time() {}
+        time_float_t seconds() const {
+            return duration_;
+        }
 
-    time_float_t seconds() const {
-        return duration_;
-    }
+        time_float_t millisecs() const {
+            return seconds() * kMillisecCoff;
+        }
 
-    time_float_t millisecs() const {
-        return seconds() * kMillisecCoff;
-    }
+        time_float_t microsecs() const {
+            return seconds() * kMicrosecCoff;
+        }
 
-    time_float_t microsecs() const {
-        return seconds() * kMicrosecCoff;
-    }
-
-    time_float_t nanosecs() const {
-        return seconds() * kNanosecCoff;
-    }
-};
-
+        time_float_t nanosecs() const {
+            return seconds() * kNanosecCoff;
+        }
+    };
 } // namespace detail
 
 template <typename T>

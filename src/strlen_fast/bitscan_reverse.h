@@ -34,22 +34,33 @@
      if (x == 0)
          return 0;
      return __builtin_clz((unsigned int)x) + 1;
- }    
+ }
+
+ How to use MSVC intrinsics to get the equivalent of this GCC code?
+
+ See: https://stackoverflow.com/questions/355967/how-to-use-msvc-intrinsics-to-get-the-equivalent-of-this-gcc-code
 
 ***************************************************************************************/
 
-#ifndef _BITSCAN_REVERSE_H_
-#define _BITSCAN_REVERSE_H_
+#ifndef SM_BITSCAN_REVERSE_H
+#define SM_BITSCAN_REVERSE_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
+#include <assert.h>
+
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
+ || defined(__amd64__) || defined(__x86_64__)
+#define __IS_X86_64     1
+#endif // _WIN64
+
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
-#include <intrin.h>     // For _BitScanReverse, _BitScanReverse64
+#include <intrin.h>     // For _BitScanReverse(), _BitScanReverse64()
 #pragma intrinsic(_BitScanReverse)
-#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+#if __IS_AMD64
 #pragma intrinsic(_BitScanReverse64)
 #endif // _WIN64
 #endif // _MSC_VER
@@ -65,57 +76,79 @@
 //
 
 // Get the index of the first bit on set to 1.
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
+#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
 // _MSC_VER
-#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-    #define __BitScanReverse32(bit_index, bit_mask) \
-            _BitScanReverse((unsigned long *)&(bit_index), (unsigned long)(bit_mask))
 
-    #define __BitScanReverse64(bit_index, bit_mask) \
-            _BitScanReverse64((unsigned long *)&(bit_index), (unsigned long long)(bit_mask))
+#define __BitScanReverse(index, mask) \
+        _BitScanReverse((unsigned long *)&(index), (unsigned long)(mask))
 
-    #define __BitScanReverse(bit_index, bit_mask) \
-            __BitScanReverse64(bit_index, bit_mask)
+#if __IS_X86_64
+    #define __BitScanReverse64(index, mask) \
+            _BitScanReverse64((unsigned long *)&(index), (unsigned __int64)(mask))
 #else
-    #define __BitScanReverse32(bit_index, bit_mask) \
-            _BitScanReverse((unsigned long *)&(bit_index), (unsigned long)(bit_mask))
-
-    #define __BitScanReverse64(bit_index, bit_mask) ((void)0)
-
-    #define __BitScanReverse(bit_index, bit_mask) \
-            __BitScanReverse32(bit_index, bit_mask)
+    #define __BitScanReverse64(index, mask) \
+            __BitScanReverse(index, mask)
 #endif // _WIN64
 
-#elif (defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)))) \
-   || defined(__clang__)
+#elif (defined(__GNUC__) && ((__GNUC__ >= 4) \
+   || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)))) \
+   || defined(__clang__) || defined(__MINGW32__) || defined(__CYGWIN__)
 // __GNUC__
-#if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-    #define __BitScanReverse32(bit_index, bit_mask) \
-            bit_index = __builtin_clz((unsigned int)bit_mask)
 
-    #define __BitScanReverse64(bit_index, bit_mask) \
-            bit_index = __builtin_clzll((unsigned long long)bit_mask)
+#define __BitScanReverse(index, mask) \
+        __builtin_BitScanReverse(index, mask)
 
-    #define __BitScanReverse(bit_index, bit_mask) \
-            __BitScanReverse64(bit_index, bit_mask)
+#if __IS_X86_64
+    #define __BitScanReverse64(index, mask) \
+            __builtin_BitScanReverse64(index, mask)
 #else
-    #define __BitScanReverse32(bit_index, bit_mask) \
-            bit_index = __builtin_clz((unsigned int)bit_mask)
-
-    #define __BitScanReverse64(bit_index, bit_mask) ((void)0)
-
-    #define __BitScanReverse(bit_index, bit_mask) \
-            __BitScanReverse32(bit_index, bit_mask)
+    #define __BitScanReverse64(index, mask) \
+            __builtin_BitScanReverse(index, (unsigned long)mask)
 #endif // __x86_64__
 
 #else
     // Not support
-    #define __BitScanReverse32(bit_index, bit_mask)
-    #define __BitScanReverse64(bit_index, bit_mask)
-    #define __BitScanReverse(bit_index, bit_mask)
-    #error "The compiler does not support BitScanReverse()."
+    #define __BitScanReverse(index, mask) \
+            __builtin_BitScanReverse(index, mask)
+
+    #define __BitScanReverse64(index, mask) \
+            __builtin_BitScanReverse64(index, mask)
+
+    // #error "The compiler does not support BitScanReverse()."
 #endif // BitScanReverse()
 
-#endif // !_BITSCAN_REVERSE_H_
+#include "support/popcnt.h"
+
+static inline
+unsigned char
+__builtin_BitScanReverse(unsigned long * index, unsigned long mask)
+{
+    assert(index != nullptr);
+    unsigned int leading_zeros;
+#if defined(__has_builtin_clz)
+    leading_zeros = __builtin_clz((unsigned int)mask);
+#else
+    leading_zeros = __native_clz((unsigned int)mask);
+#endif
+    *index = 32 - leading_zeros;
+    return (unsigned char)(mask != 0);
+}
+
+static inline
+unsigned char
+__builtin_BitScanReverse64(unsigned long * index, unsigned long long mask)
+{
+    assert(index != nullptr);
+    unsigned int leading_zeros;
+#if defined(__has_builtin_clzll)
+    leading_zeros = __builtin_clzll((unsigned long long)mask);
+#else
+    leading_zeros = __native_clzll((unsigned long long)mask);
+#endif
+    *index = 64 - leading_zeros;
+    return (unsigned char)(mask != 0);
+}
+
+#undef __IS_X86_64
+
+#endif // SM_BITSCAN_REVERSE_H
