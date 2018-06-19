@@ -28,12 +28,15 @@
  ¡ª int __builtin_ffs (int x);
    int __builtin_ffsll (long long x);
 
-    Returns one plus the index of the least significant 1-bit of x, or if x is zero, returns zero. 
+    Returns one plus the index of the least significant 1-bit of x, or if x is zero, returns zero.
+
+ See: https://blog.stephencleary.com/2010/10/implementing-gccs-builtin-functions.html
+ See: http://www.cnblogs.com/miloyip/p/4517053.html
 
  int __builtin_ffs(int x) {
      if (x == 0)
          return 0;
-     return __builtin_clz((unsigned int)x) + 1;
+     return __builtin_ctz((unsigned int)x) + 1;
  }
 
  How to use MSVC intrinsics to get the equivalent of this GCC code?
@@ -52,8 +55,7 @@
 #include <assert.h>
 
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
- || defined(__amd64__) || defined(__x86_64__)
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
 #define __IS_X86_64     1
 #endif // _WIN64
 

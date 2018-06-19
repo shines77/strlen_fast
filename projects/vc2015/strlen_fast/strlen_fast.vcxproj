@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\strlen_fast\bitscan_forward.h" />
     <ClInclude Include="..\..\..\src\strlen_fast\bitscan_reverse.h" />
+    <ClInclude Include="..\..\..\src\strlen_fast\popcnt.h" />
     <ClInclude Include="..\..\..\src\strlen_fast\x86_intrin.h" />
     <ClInclude Include="..\..\..\src\strlen_fast\msvc\inttypes.h" />
     <ClInclude Include="..\..\..\src\strlen_fast\msvc\stdint.h" />

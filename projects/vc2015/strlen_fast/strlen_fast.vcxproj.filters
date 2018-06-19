@@ -46,5 +46,8 @@
     <ClInclude Include="..\..\..\src\strlen_fast\bitscan_reverse.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\strlen_fast\popcnt.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
