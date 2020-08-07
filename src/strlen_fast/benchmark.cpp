@@ -87,8 +87,9 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "::strlen(str)    ", ::strlen(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(iterations * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "::strlen(str)    ", ::strlen(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -104,8 +105,9 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         }
         sw.stop();
 
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_sse2_v1(str)    ", strlen_sse2_v1(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(iterations * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str)    ", strlen_sse2_v1(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -121,8 +123,9 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         }
         sw.stop();
 
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_sse2_v2(str)    ", strlen_sse2_v2(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(iterations * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v2(str)    ", strlen_sse2_v2(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
@@ -140,8 +143,9 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         }
         sw.stop();
 
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_sse2_v1(str) x64", strlen_sse2_v1_x64(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(iterations * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str) x64", strlen_sse2_v1_x64(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 #endif // _X64
 
@@ -158,8 +162,9 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         }
         sw.stop();
 
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_avx_v1(str) (a)", strlen_avx_v1a(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(iterations * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (a)", strlen_avx_v1a(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -175,8 +180,9 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         }
         sw.stop();
 
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_avx_v1(str) (b)", strlen_avx_v1b(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(iterations * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (b)", strlen_avx_v1b(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -192,8 +198,9 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         }
         sw.stop();
 
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_avx_v2(str)    ", strlen_avx_v2(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(iterations * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_avx_v2(str)    ", strlen_avx_v2(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     printf("\n");
@@ -233,8 +240,9 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "::strlen(str)    ", ::strlen(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "::strlen(str)    ", ::strlen(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -252,8 +260,9 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_sse2_v1(str)    ", strlen_sse2_v1(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str)    ", strlen_sse2_v1(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -271,9 +280,9 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        double elapsed_time = sw.getElapsedNanosec() / (double)(test_length * str_len);
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_sse2_v2(str)    ", strlen_sse2_v2(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v2(str)    ", strlen_sse2_v2(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
@@ -293,8 +302,9 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_sse2_v1(str) x64", strlen_sse2_v1_x64(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str) x64", strlen_sse2_v1_x64(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 #endif // _X64
 
@@ -313,8 +323,9 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_avx_v1(str) (a)", strlen_avx_v1a(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (a)", strlen_avx_v1a(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -332,8 +343,9 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_avx_v1(str) (b)", strlen_avx_v1b(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (b)", strlen_avx_v1b(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     {
@@ -351,8 +363,9 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_avx_v2(str)    ", strlen_avx_v2(str), sw.getElapsedMillisec(), sum);
+        double ns_per_byte = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %24s = %8" PRIuPTR ", time spent: %7.3f ms, time/byte: %7.3f ns, sum: %" PRIuPTR "\n",
+            "strlen_avx_v2(str)    ", strlen_avx_v2(str), sw.getElapsedMillisec(), ns_per_byte, sum);
     }
 
     printf("\n");
