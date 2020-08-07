@@ -72,8 +72,12 @@ public:
 
     // The zero value time.
     const time_float_t kTimeZero = static_cast<time_float_t>(0.0);
-    // 1 second = 1000 millisec
+    // 1 second = 1,000 millisec
     const time_float_t kMillisecCoff = static_cast<time_float_t>(1000.0);
+    // 1 second = 1,000,000 microsec
+    const time_float_t kMicrosecCoff = static_cast<time_float_t>(1000000.0);
+    // 1 second = 1,000,000,000 nanosec
+    const time_float_t kNanosecCoff = static_cast<time_float_t>(1000000000.0);
 
 private:
     time_point_t start_time_;
@@ -210,6 +214,14 @@ public:
         return elapsed_time;
     }
 
+    time_float_t peekElapsedNanosec() const {
+        return this->peekElapsedSecond() * kNanosecCoff;
+    }
+
+    time_float_t peekElapsedMicrosec() const {
+        return this->peekElapsedSecond() * kMicrosecCoff;
+    }
+
     time_float_t peekElapsedMillisec() const {
         return this->peekElapsedSecond() * kMillisecCoff;
     }
@@ -221,6 +233,14 @@ public:
         return this->elapsed_time_;
     }
 
+    time_float_t getElapsedNanosec() {
+        return this->getElapsedSecond() * kNanosecCoff;
+    }
+
+    time_float_t getElapsedMicrosec() {
+        return this->getElapsedSecond() * kMicrosecCoff;
+    }
+
     time_float_t getElapsedMillisec() {
         return this->getElapsedSecond() * kMillisecCoff;
     }
@@ -228,6 +248,16 @@ public:
     time_float_t getTotalSecond() const {
         __COMPILER_BARRIER();
         return this->total_elapsed_time_;
+    }
+
+    time_float_t getTotalNanosec() const {
+        __COMPILER_BARRIER();
+        return this->total_elapsed_time_ * kNanosecCoff;
+    }
+
+    time_float_t getTotalMicrosec() const {
+        __COMPILER_BARRIER();
+        return this->total_elapsed_time_ * kMicrosecCoff;
     }
 
     time_float_t getTotalMillisec() const {

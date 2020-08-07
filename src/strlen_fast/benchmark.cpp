@@ -45,7 +45,7 @@ void generate_random_string_array(char * str, size_t length, size_t str_len, siz
         //for (size_t j = 0; j < str_len; ++j)
         //    *cur++ = (unsigned char)(rand() % 255) + 1;
         size_t base = str_len / 2;
-        size_t len = base + rand() % (str_len - base);
+        size_t len = base + (rand() % (str_len - base));
         *(dest + len) = '\0';
         dest += str_len;
     }
@@ -54,12 +54,12 @@ void generate_random_string_array(char * str, size_t length, size_t str_len, siz
 void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 {
     if (str_len <= 0) {
-        printf("Type: test_fixed_string, Error: str_len <= 0, str_len = %u\n\n",
+        printf(" type: test_fixed_string, Error: str_len <= 0, str_len = %u\n\n",
             str_len);
         return;
     }
 
-    printf("Type: test_fixed_string, iterations = %u, str_len = %u byte(s)\n\n",
+    printf(" type: test_fixed_string, iterations = %u, str_len = %u byte(s)\n\n",
         iterations, str_len);
 
     std::unique_ptr<char> _str(new char[str_len]);
@@ -77,6 +77,7 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         for (uint32_t i = 0; i < iterations; ++i) {
             len = ::strlen(str);
 #if defined(__GNUC__)
+            // To avoid the compiler optimization in gcc or clang.
             if ((len == 0 && dir == -1) || (len == (str_len - 1) && dir == 1))
                 dir = -dir;
             str += dir;
@@ -86,8 +87,8 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "::strlen(str)", ::strlen(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "::strlen(str)    ", ::strlen(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -98,13 +99,13 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
-            len = strlen_fast_v1_sse2(str);
+            len = strlen_sse2_v1(str);
             sum += len;
         }
         sw.stop();
 
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_sse2(str)", strlen_fast_v1_sse2(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str)    ", strlen_sse2_v1(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -115,13 +116,13 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
-            len = strlen_fast_v2_sse2(str);
+            len = strlen_sse2_v2(str);
             sum += len;
         }
         sw.stop();
 
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v2_sse2(str)", strlen_fast_v2_sse2(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v2(str)    ", strlen_sse2_v2(str), sw.getElapsedMillisec(), sum);
     }
 
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
@@ -134,13 +135,13 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
-            len = strlen_fast_v1_sse2_x64(str);
+            len = strlen_sse2_v1_x64(str);
             sum += len;
         }
         sw.stop();
 
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_sse2_x64(str)", strlen_fast_v1_sse2_x64(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str) x64", strlen_sse2_v1_x64(str), sw.getElapsedMillisec(), sum);
     }
 #endif // _X64
 
@@ -152,13 +153,13 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
-            len = strlen_fast_v1a_avx(str);
+            len = strlen_avx_v1a(str);
             sum += len;
         }
         sw.stop();
 
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1a_avx(str)", strlen_fast_v1a_avx(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (a)", strlen_avx_v1a(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -169,13 +170,13 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
-            len = strlen_fast_v1b_avx(str);
+            len = strlen_avx_v1b(str);
             sum += len;
         }
         sw.stop();
 
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1b_avx(str)", strlen_fast_v1b_avx(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (b)", strlen_avx_v1b(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -186,13 +187,13 @@ void strlen_benchmark_fixed_string(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < iterations; ++i) {
-            len = strlen_fast_v2_avx(str);
+            len = strlen_avx_v2(str);
             sum += len;
         }
         sw.stop();
 
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v2_avx(str)", strlen_fast_v2_avx(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_avx_v2(str)    ", strlen_avx_v2(str), sw.getElapsedMillisec(), sum);
     }
 
     printf("\n");
@@ -203,13 +204,13 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
     (void)iterations;
 
     if (str_len <= 0) {
-        printf("Type: test_random_length, Error: str_len <= 0, max_str_len = %u\n\n", str_len);
+        printf(" type: test_random_length, Error: str_len <= 0, max_str_len = %u\n\n", str_len);
         return;
     }
 
     uint32_t test_length = iterations;
 
-    printf("Type: test_random_length, iterations = %u, str_len = %u byte(s)\n\n",
+    printf(" type: test_random_length, iterations = %u, str_len = %u byte(s)\n\n",
         test_length, str_len);
 
     size_t alloc_size = str_len * test_length;
@@ -232,8 +233,8 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "::strlen(str)", ::strlen(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "::strlen(str)    ", ::strlen(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -244,15 +245,15 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < test_length; ++i) {
-            len = strlen_fast_v1_sse2(str);
+            len = strlen_sse2_v1(str);
             sum += len;
             str += str_len;
         }
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_sse2(str)", strlen_fast_v1_sse2(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str)    ", strlen_sse2_v1(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -263,15 +264,16 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < test_length; ++i) {
-            len = strlen_fast_v2_sse2(str);
+            len = strlen_sse2_v2(str);
             sum += len;
             str += str_len;
         }
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v2_sse2(str)", strlen_fast_v2_sse2(str), sw.getElapsedMillisec(), sum);
+        double elapsed_time = sw.getElapsedNanosec() / (double)(test_length * str_len);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v2(str)    ", strlen_sse2_v2(str), sw.getElapsedMillisec(), sum);
     }
 
 #if defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
@@ -284,15 +286,15 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < test_length; ++i) {
-            len = strlen_fast_v1_sse2_x64(str);
+            len = strlen_sse2_v1_x64(str);
             sum += len;
             str += str_len;
         }
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1_sse2_x64(str)", strlen_fast_v1_sse2_x64(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_sse2_v1(str) x64", strlen_sse2_v1_x64(str), sw.getElapsedMillisec(), sum);
     }
 #endif // _X64
 
@@ -304,15 +306,15 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < test_length; ++i) {
-            len = strlen_fast_v1a_avx(str);
+            len = strlen_avx_v1a(str);
             sum += len;
             str += str_len;
         }
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1a_avx(str)", strlen_fast_v1a_avx(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (a)", strlen_avx_v1a(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -323,15 +325,15 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < test_length; ++i) {
-            len = strlen_fast_v1b_avx(str);
+            len = strlen_avx_v1b(str);
             sum += len;
             str += str_len;
         }
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v1b_avx(str)", strlen_fast_v1b_avx(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_avx_v1(str) (b)", strlen_avx_v1b(str), sw.getElapsedMillisec(), sum);
     }
 
     {
@@ -342,15 +344,15 @@ void strlen_benchmark_random_length(uint32_t str_len, uint32_t iterations)
 
         sw.start();
         for (uint32_t i = 0; i < test_length; ++i) {
-            len = strlen_fast_v2_avx(str);
+            len = strlen_avx_v2(str);
             sum += len;
             str += str_len;
         }
         sw.stop();
 
         str = _str.get();
-        printf("%30s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
-            "strlen_fast_v2_avx(str)", strlen_fast_v2_avx(str), sw.getElapsedMillisec(), sum);
+        printf(" %26s = %8" PRIuPTR ", time spent: %8.3f ms, sum: %" PRIuPTR "\n",
+            "strlen_avx_v2(str)    ", strlen_avx_v2(str), sw.getElapsedMillisec(), sum);
     }
 
     printf("\n");
@@ -394,14 +396,15 @@ void strlen_benchmark()
     printf("--------------------------------------------------------------------------------------\n\n");
 
     static const int s_max_iterations_2[] = { 65536 * 2, 65536, 32768, 16364, 8192,
-                                              4096, 2048, 1024, 512, 256, 128, 0 };
+                                              4096, 2048, 1024, 512, 256, 128, 64,
+                                              32, 0 };
     length = (1 << 4);
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 12; ++i) {
         iterations = s_max_iterations_2[i];
         if (iterations == 0)
             break;
         strlen_benchmark_impl(test_random_length, length, iterations);
-        length <<= 2;
+        length <<= 1;
     }
 
     printf("--------------------------------------------------------------------------------------\n\n");
@@ -414,8 +417,8 @@ int main(int argc, char * argv[])
 
 #if 0
     char str[] = "abcdefggfdagafdgfadgdfgfdf";
-    size_t len_v1 = strlen_fast_v1_sse2(str);
-    size_t len_v2 = strlen_fast_v2_sse2(str);
+    size_t len_v1 = strlen_sse2_v1(str);
+    size_t len_v2 = strlen_sse2_v2(str);
     printf("\n");
     printf("str = \"%s\", address = 0x%016" PRIXPTR "\n"
         "strlen = %" PRIuPTR ", strlen_fast_v1 = %" PRIuPTR ", strlen_fast_v2 = %" PRIuPTR ".\n",

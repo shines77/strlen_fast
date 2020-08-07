@@ -15,7 +15,7 @@
 #pragma warning(disable: 4700)
 #endif
 
-size_t __FASTCALL strlen_fast_v1a_avx(const char * str)
+size_t __FASTCALL strlen_avx_v1a(const char * str)
 {
     size_t len;
     register __m256i zero32, src32_low, src32_high;
@@ -89,7 +89,7 @@ size_t __FASTCALL strlen_fast_v1a_avx(const char * str)
     return len;
 }
 
-size_t __FASTCALL strlen_fast_v1b_avx(const char * str)
+size_t __FASTCALL strlen_avx_v1b(const char * str)
 {
     size_t len;
     register __m256i zero32, src32_low, src32_high;
@@ -194,7 +194,7 @@ strlen_exit:
     return len;
 }
 
-size_t __FASTCALL strlen_fast_v2_avx(const char * str)
+size_t __FASTCALL strlen_avx_v2(const char * str)
 {
     size_t len;
     register __m256i zero32, src32_low, src32_high;
@@ -322,7 +322,7 @@ strlen_exit:
 #if defined(_WIN64) || defined(WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
 
-size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str)
+size_t __FASTCALL strlen_avx_v1_x64(const char * str)
 {
     size_t len;
     register __m256i zero32, src32_low, src32_high;
@@ -438,7 +438,7 @@ size_t __FASTCALL strlen_fast_v1_avx_x64(const char * str)
 
 #endif // _M_X64 || __x86_64__
 
-size_t __FASTCALL strlen_fast_asm_avx(const char * str)
+size_t __FASTCALL strlen_avx_asm(const char * str)
 {
     (void)str;
     return 0;
